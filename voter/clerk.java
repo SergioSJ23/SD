@@ -1,6 +1,7 @@
 package voter;
 
-public class Voter {
+public class clerk {
+
     
     
 }

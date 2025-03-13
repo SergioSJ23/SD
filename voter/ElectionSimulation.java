@@ -1,24 +1,40 @@
 package voter;
 
+import java.util.Random;
+import java.util.Scanner;
 
 public class ElectionSimulation {
     public static void main(String args[]) {
-        // Verifica se foram passados pelo menos 2 argumentos
-        if (args.length < 2) {
-            System.out.println("Erro: Você deve fornecer dois argumentos.");
-            System.out.println("Uso: java ElectionSimulation <num_voters> <num_dem_votes>");
-            return;
-        }
 
-        try {
-            Integer voters = Integer.valueOf(args[0]);
-            Integer demVotes = Integer.valueOf(args[1]);
+        Random rand = new Random();
 
-            System.out.println("Number of voters: " + voters);
-            System.out.println("Number of Democratic votes: " + demVotes);
-        } catch (NumberFormatException e) {
-            System.out.println("Erro: Os argumentos devem ser números inteiros.");
-        }
+        int numVoters;
+        int waitingQueue;
+        int numPollsters;
+        int answerPollester;
+        int liePollester;
+        int repeatVoter;
+        int vote;
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter the number of voters(min 3, max 10): ");
+        numVoters = sc.nextInt();
+        System.out.println("Enter max number of waiting voters(min 2, max 5): ");
+        waitingQueue = sc.nextInt();
+        System.out.println("Enter the percentage of people that answer the pollster(min 0, max 100): ");
+        answerPollester = sc.nextInt();
+        System.out.println("Enter the percentage of people that lie to the pollster(min 0, max 100): ");
+        liePollester = sc.nextInt();
+        System.out.println("Enter the percentage of people that vote more than once(min 0, max 100): ");
+        repeatVoter = sc.nextInt();
+
+        sc.close();
+
+        for (int i = 0; i < numVoters; i++) {
+            vote = rand.nextInt(2);
+            new voter(i, vote, answerPollester, liePollester, repeatVoter).start();
+        };
 
 
 
