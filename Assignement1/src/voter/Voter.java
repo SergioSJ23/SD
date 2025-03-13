@@ -1,8 +1,8 @@
-package voter;
+package Ass1.src.voter;
 import java.util.Random;
 
 
-public class voter extends Thread {
+public class Voter extends Thread {
 
     Random rand = new Random();
 
@@ -12,7 +12,7 @@ public class voter extends Thread {
     private int liePollester;
     private int repeatVoter;
 
-    public voter (int id, int vote, int answerPollester, int liePollester, int repeatVoter) {
+    public Voter (int id, int vote, int answerPollester, int liePollester, int repeatVoter) {
         this.id = id;
         this.vote = vote;
         this.answerPollester = answerPollester;
@@ -23,7 +23,7 @@ public class voter extends Thread {
     @Override
     public void run(){
         try{
-            if(station.capacity == true){
+            if(Station.capacity == true){
                 System.out.println("Voter " + id + " is waiting outside");
             }
 

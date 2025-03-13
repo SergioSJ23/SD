@@ -1,4 +1,4 @@
-package voter;
+package Ass1.src.voter;
 
 import java.util.Random;
 import java.util.Scanner;
@@ -33,7 +33,7 @@ public class ElectionSimulation {
 
         for (int i = 0; i < numVoters; i++) {
             vote = rand.nextInt(2);
-            new voter(i, vote, answerPollester, liePollester, repeatVoter).start();
+            new Voter(i, vote, answerPollester, liePollester, repeatVoter).start();
         };
 
 
