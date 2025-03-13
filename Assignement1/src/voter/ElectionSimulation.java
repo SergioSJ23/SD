@@ -10,11 +10,12 @@ public class ElectionSimulation {
 
         int numVoters;
         int waitingQueue;
-        int numPollsters;
+        int numVotersInquired;
         int answerPollester;
         int liePollester;
         int repeatVoter;
         int vote;
+        int partyAodds;
 
         Scanner sc = new Scanner(System.in);
 
@@ -22,6 +23,10 @@ public class ElectionSimulation {
         numVoters = sc.nextInt();
         System.out.println("Enter max number of waiting voters(min 2, max 5): ");
         waitingQueue = sc.nextInt();
+        System.out.println("Enter the percentage of votes party A will get(min 0, max 100): ");
+        partyAodds = sc.nextInt();
+        System.out.println("Enter the percentage of voters the pollster will inquire(min 0, max 100): ");
+        numVotersInquired = sc.nextInt();
         System.out.println("Enter the percentage of people that answer the pollster(min 0, max 100): ");
         answerPollester = sc.nextInt();
         System.out.println("Enter the percentage of people that lie to the pollster(min 0, max 100): ");
@@ -33,12 +38,7 @@ public class ElectionSimulation {
 
         for (int i = 0; i < numVoters; i++) {
             vote = rand.nextInt(2);
-            new Voter(i, vote, answerPollester, liePollester, repeatVoter).start();
+            new Voter(i, vote, answerPollester, liePollester, repeatVoter, partyAodds).start();
         }
-
-        
-
-
-
     }
 }

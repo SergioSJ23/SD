@@ -1,27 +1,26 @@
 package voter;
 import java.util.Random;
 
-
-
 public class Voter extends Thread {
 
     Random rand = new Random();
 
     private int id;
-    private int vote;
+    private char vote;
     private int answerPollester;
     private int liePollester;
     private int repeatVoter;
+    private int partyAodds;
     private Clerk clerk;
     private Station station;
-
-    public Voter (int id, int vote, int answerPollester, int liePollester, int repeatVoter) {
+    
+    public Voter (int id, char vote, int answerPollester, int liePollester, int repeatVoter, int partyAodds){
         this.id = id;
         this.vote = vote;
         this.answerPollester = answerPollester;
         this.liePollester = liePollester;
         this.repeatVoter = repeatVoter;
-
+        this.partyAodds = partyAodds;
     }
 
     @Override
@@ -31,22 +30,39 @@ public class Voter extends Thread {
             if(singleton.station.checkCapacity()){
                 System.out.println("Voter " + id + " is waiting outside");
             }
-
-            Thread.sleep(rand.nextInt(5) + 5);
+            // funçao para entrar na station
+            Thread.sleep(rand.nextInt(6) + 5);
             if(singleton.clerk.validate(id)){
                 System.out.println("Voter " + id + " is voting");
-                Thread.sleep(new Random().nextInt(5) + 5);
-                singleton.clerk.vote(id, vote);
-                System.out.println("Voter " + id + " voted");
+                Thread.sleep(rand.nextInt(5) + 5);
+                if(rand.nextInt(100) < partyAodds){
+                    singleton.votingBooth.vote(id, 'A');
+                    vote = 'A';
+                }else{
+                    singleton.votingBooth.vote(id, 'B');
+                    vote = 'B';
+                }     
+                System.out.println("Voter " + id + " is leaving");
+                // funçao para sair da station
+
+                // funçao para verificar se o pollster vai perguntar
+                singleton.pollster.inquire(this);
+                // funçao para atribuir novo id ao voter
             }
             else{
-                System.out.println("Voter " + id + " is leaving");
+                System.out.println("Voter " + id + " already voted");
             }
         }
         catch(InterruptedException e){
             e.printStackTrace();
         }
+    }  
+
+    public int showId(){
+        return id;
     }
 
-    
+    public char getVote(){
+        return vote;
+    }
 }

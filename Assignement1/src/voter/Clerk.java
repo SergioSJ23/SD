@@ -10,13 +10,6 @@ public class Clerk {
     }
 
     public boolean validate(int id){
-            return true;
-    }
-
-    public void vote(int id, int vote){
-        System.out.println("Voter " + id + " voted for " + vote);
-    }
-
-
-    
+        return true;
+    }    
 }
