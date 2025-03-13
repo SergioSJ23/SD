@@ -14,7 +14,7 @@ public class ElectionSimulation {
         int answerPollester;
         int liePollester;
         int repeatVoter;
-        int vote;
+        int maxVoters;
 
         Scanner sc = new Scanner(System.in);
 
@@ -28,17 +28,13 @@ public class ElectionSimulation {
         liePollester = sc.nextInt();
         System.out.println("Enter the percentage of people that vote more than once(min 0, max 100): ");
         repeatVoter = sc.nextInt();
+        System.out.println("Enter the maximum number of voters for the clerk to close the station: ");
+        maxVoters = sc.nextInt();
 
         sc.close();
 
         for (int i = 0; i < numVoters; i++) {
-            vote = rand.nextInt(2);
-            new Voter(i, vote, answerPollester, liePollester, repeatVoter).start();
+            new Voter(answerPollester, liePollester, repeatVoter, maxVoters).start();
         }
-
-        
-
-
-
     }
 }
