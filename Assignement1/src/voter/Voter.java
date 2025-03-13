@@ -15,29 +15,28 @@ public class Voter extends Thread {
     private Clerk clerk;
     private Station station;
 
-    public Voter (int id, int vote, int answerPollester, int liePollester, int repeatVoter, Clerk clerk, Station station) {
+    public Voter (int id, int vote, int answerPollester, int liePollester, int repeatVoter) {
         this.id = id;
         this.vote = vote;
         this.answerPollester = answerPollester;
         this.liePollester = liePollester;
         this.repeatVoter = repeatVoter;
-        this.clerk = clerk;
-        this.station = station;
 
     }
 
     @Override
     public void run(){
         try{
-            if(station.checkCapacity()){
+            Singleton singleton = Singleton.getInstance();
+            if(singleton.station.checkCapacity()){
                 System.out.println("Voter " + id + " is waiting outside");
             }
 
             Thread.sleep(rand.nextInt(5) + 5);
-            if(clerk.validate(id)){
+            if(singleton.clerk.validate(id)){
                 System.out.println("Voter " + id + " is voting");
                 Thread.sleep(new Random().nextInt(5) + 5);
-                clerk.vote(id, vote);
+                singleton.clerk.vote(id, vote);
                 System.out.println("Voter " + id + " voted");
             }
             else{

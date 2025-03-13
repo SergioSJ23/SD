@@ -30,13 +30,11 @@ public class ElectionSimulation {
         repeatVoter = sc.nextInt();
 
         sc.close();
-        Clerk clerk = new Clerk(50);
-        Station station = new Station(0, 3);
 
         for (int i = 0; i < numVoters; i++) {
             vote = rand.nextInt(2);
-            new Voter(i, vote, answerPollester, liePollester, repeatVoter, clerk, station).start();
-        };
+            new Voter(i, vote, answerPollester, liePollester, repeatVoter).start();
+        }
 
         
 

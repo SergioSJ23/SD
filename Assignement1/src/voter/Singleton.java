@@ -8,7 +8,7 @@ public class Singleton {
     public Station station;
 
     private Singleton(){
-        this.clerk = new Clerk();
+        this.clerk = new Clerk(50);
         this.exitPoll = new ExitPoll();
         this.pollster = new Pollster(50);
         this.station = new Station(0, 0);
