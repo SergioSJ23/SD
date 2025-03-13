@@ -14,6 +14,7 @@ public class Singleton {
         this.station = new Station(0, 0);
     }
 
+    //TODO: Verify in all files, where we can change the constructor to private
     public static Singleton getInstance(){
         if (instance == null){
             instance = new Singleton();
