@@ -14,7 +14,7 @@ public class ElectionSimulation {
         int answerPollester;
         int liePollester;
         int repeatVoter;
-        int vote;
+        char vote;
         int partyAodds;
 
         Scanner sc = new Scanner(System.in);
@@ -37,7 +37,7 @@ public class ElectionSimulation {
         sc.close();
 
         for (int i = 0; i < numVoters; i++) {
-            vote = rand.nextInt(2);
+            vote = ' ';
             new Voter(i, vote, answerPollester, liePollester, repeatVoter, partyAodds).start();
         }
     }
