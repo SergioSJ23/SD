@@ -1,4 +1,4 @@
-package Ass1.src.voter;
+package voter;
 
 public class Station {
 

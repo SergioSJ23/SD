@@ -1,4 +1,4 @@
-package Ass1.src.voter;
+package voter;
 
 import java.util.Random;
 import java.util.Scanner;
