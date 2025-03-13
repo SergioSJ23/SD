@@ -1,5 +1,4 @@
 package voter;
-
 import java.util.Random;
 
 
