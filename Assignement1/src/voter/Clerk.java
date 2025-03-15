@@ -22,7 +22,4 @@ public class Clerk {
     public void vote(int id, int vote){
         System.out.println("Voter " + id + " voted for " + vote);
     }
-
-
-    
 }
