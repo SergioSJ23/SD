@@ -48,9 +48,7 @@ public class Voter extends Thread {
                     }else{
                         singleton.votingBooth.vote(this.id, 'B');
                         this.vote = 'B';
-                    }     
-                    singleton.clerk.vote(this.id, this.vote);
-                    System.out.println("Voter " + this.id + " voted");
+                    }
                 }
                 else{
                     System.out.println("Voter " + this.id + " is leaving");
