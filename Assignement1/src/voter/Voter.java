@@ -1,61 +1,79 @@
 package voter;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-
 
 public class Voter extends Thread {
 
     Random rand = new Random();
 
+    private final static ArrayList<Integer> idList = new ArrayList<>();
     private int id;
     private int vote;
     private int answerPollester;
     private int liePollester;
     private int repeatVoter;
+    private static int maxVoters;
     private int numPersons = 0;
     private ReentrantLock lock = new ReentrantLock();
+    public Voter (int answerPollester, int liePollester, int repeatVoter, int maxVoters) {
 
-    public Voter (int id, int vote, int answerPollester, int liePollester, int repeatVoter) {
-        this.id = id;
-        this.vote = vote;
+        this.id = rand.nextInt(Integer.MAX_VALUE);
+        this.vote = rand.nextInt(2);
         this.answerPollester = answerPollester;
         this.liePollester = liePollester;
         this.repeatVoter = repeatVoter;
-
+        this.maxVoters = maxVoters;
     }
 
+    // TODO: Implement monitors in the project
     @Override
     public void run(){
         try{
             Singleton singleton = Singleton.getInstance();
-            numPersons += 1;
-            if(!singleton.station.checkCapacity(numPersons)){
+            while(true){
+                if(!singleton.station.checkCapacity(numPersons)){
                 System.out.println("Voter " + id + " is waiting outside");
-            }
-            else{
+                }
                 System.out.println("Voter " + id + " is entering the station");
-            }
-
-            Thread.sleep(rand.nextInt(5) + 5);
-            if(singleton.clerk.validate(id)){
-                System.out.println("Voter " + id + " is voting");
+                numPersons += 1;
                 Thread.sleep(rand.nextInt(5) + 5);
-                singleton.clerk.vote(id, vote);
-                System.out.println("Voter " + id + " voted");
-            }
-            else{
-
-                System.out.println("Voter " + id + " is leaving");
+                if(singleton.clerk.validate(id)){
+                    System.out.println("Voter " + id + " is voting");
+                    Thread.sleep(new Random().nextInt(5) + 5);
+                    singleton.clerk.vote(id, vote);
+                    System.out.println("Voter " + id + " voted");
+                }
+                else{
+                    System.out.println("Voter " + id + " is leaving");
+                }
                 numPersons -= 1;
-                return;
+                decrement();
+                if (maxVoters <= 0){
+                    break;
+                }
+                reborn();
             }
+            
         }
         catch(InterruptedException e){
             e.printStackTrace();
         }
     }
 
-    
+    public void reborn(){
+        if (rand.nextInt(0,100) < repeatVoter){
+            synchronized(idList) {
+                while (idList.contains(this.id)) {
+                    this.id = rand.nextInt(Integer.MAX_VALUE);
+                }
+                idList.add(this.id);  // Add the unique id to the list
+            }
+        }
+    }
+
+    public void decrement(){
+        this.maxVoters -= 1;
+    }
 }
