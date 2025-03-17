@@ -11,8 +11,8 @@ public class Singleton {
     private Singleton(){
         this.clerk = new Clerk(50);
         this.exitPoll = new ExitPoll();
-        this.pollster = new Pollster(50, 50, 50);
-        this.station = new Station(0, 0);
+        this.pollster = new Pollster(50);
+        this.station = new Station(0, 0, 0);
         this.votingBooth = new VotingBooth();
     }
 
