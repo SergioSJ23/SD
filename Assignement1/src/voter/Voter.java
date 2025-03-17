@@ -54,6 +54,7 @@ public class Voter extends Thread {
                     System.out.println("Voter " + this.id + " is leaving");
                 }
                 this.numPersons -= 1;
+                singleton.pollster.inquire(this);
                 if (maxVoters <= 0){
                     break;
                 }
