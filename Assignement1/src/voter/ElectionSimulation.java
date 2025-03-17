@@ -1,12 +1,10 @@
 package voter;
 
-import java.util.Random;
 import java.util.Scanner;
 
 public class ElectionSimulation {
     public static void main(String args[]) {
 
-        Random rand = new Random();
 
         int numVoters;
         int waitingQueue;
@@ -20,30 +18,76 @@ public class ElectionSimulation {
 
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("Enter the number of voters(min 3, max 10): ");
-            numVoters = sc.nextInt();
+            String input = sc.nextLine();
+            if(input.isEmpty()){
+                numVoters = 5;
+            }else{
+                numVoters = Integer.parseInt(input);
+            }
             System.out.println("Enter the max number of voters: ");
-            maxVoters = sc.nextInt();
+            input = sc.nextLine();
+            if(input.isEmpty()){
+                maxVoters = 5;
+            }else{
+                maxVoters = Integer.parseInt(input);
+            }
             System.out.println("What is the capacity of the station for voters: ");
-            capacity = sc.nextInt();
+            input = sc.nextLine();
+            if(input.isEmpty()){
+                capacity = 5;
+            }else{
+                capacity = Integer.parseInt(input);
+            }
             System.out.println("Enter max number of waiting voters(min 2, max 5): ");
-            waitingQueue = sc.nextInt();
+            input = sc.nextLine();
+            if(input.isEmpty()){
+                waitingQueue = 5;
+            }else{
+                waitingQueue = Integer.parseInt(input);
+            }
             System.out.println("Enter the percentage of votes party A will get(min 0, max 100): ");
-            partyAodds = sc.nextInt();
+            input = sc.nextLine();
+            if(input.isEmpty()){
+                partyAodds = 50;
+            }else{
+                partyAodds = Integer.parseInt(input);
+            }
             System.out.println("Enter the percentage of voters the pollster will inquire(min 0, max 100): ");
-            numVotersInquired = sc.nextInt();
+            input = sc.nextLine();
+            if(input.isEmpty()){
+                numVotersInquired = 50;
+            }else{
+                numVotersInquired = Integer.parseInt(input);
+            }
             System.out.println("Enter the percentage of people that answer the pollster(min 0, max 100): ");
-            answerPollester = sc.nextInt();
+            input = sc.nextLine();
+            if(input.isEmpty()){
+                answerPollester = 50;
+            }else{
+                answerPollester= Integer.parseInt(input);
+            }
             System.out.println("Enter the percentage of people that lie to the pollster(min 0, max 100): ");
-            liePollester = sc.nextInt();
+            input = sc.nextLine();
+            if(input.isEmpty()){
+                liePollester = 50;
+            }else{
+                liePollester = Integer.parseInt(input);
+            }
             System.out.println("Enter the percentage of people that vote more than once(min 0, max 100): ");
-            repeatVoter = sc.nextInt();
+            input = sc.nextLine();
+            if(input.isEmpty()){
+                repeatVoter = 50;
+            }else{
+                repeatVoter = Integer.parseInt(input);
+            }
         }
 
         // Instantiate the variables with the correct values
+        Station station = Station.getInstance(capacity);
         Clerk clerk = Clerk.getInstance(maxVoters);
         ExitPoll exitPoll = ExitPoll.getInstance();
         Pollster pollster = Pollster.getInstance(numVotersInquired, answerPollester, liePollester);
-        Station station = Station.getInstance(0,capacity,0);
+        
         VotingBooth votingBooth = VotingBooth.getInstance();
 
         for (int i = 0; i < numVoters; i++) {

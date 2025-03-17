@@ -3,36 +3,29 @@ package voter;
 public class Station {
 
     private static Station instance;
-    private int status;
+    private int status = 0;
     private final int capacity;
-    private final int numVoters;
     private int numVotes = 0;
     private int votersInside = 0;
 
-    public Station(int status, int capacity, int numVoters){
-        this.status = status;
+    public Station(int capacity){
+        
         this.capacity = capacity;
-        this.numVoters = numVoters;
+        
     }
 
-    public int close(){
-        this.numVotes += 1;
-        if(this.numVotes >= this.numVoters){
-            this.status = 1;
-        }
-        else{
-            this.status = 0;
-        }
-        return this.status;   
-    }
+
 
     public boolean checkCapacity(){
         return this.votersInside < this.capacity;
     }
 
-    public static Station getInstance(int status, int capacity, int numVoters){
+    public static Station getInstance(int capacity){
+        System.out.println("Station: Checking if station exists");
+
         if (instance == null){
-            instance = new Station( status, capacity, numVoters);
+            System.out.println("Station: Creating new station with capacity " + capacity);
+            instance = new Station(capacity);
         }
         return instance;
     }
@@ -43,5 +36,13 @@ public class Station {
     
     public void leaveStation(){
         this.votersInside -= 1;
+    }
+
+    public void close(){
+        this.status = 1;
+    }
+
+    public int getStatus(){
+        return this.status;
     }
 }

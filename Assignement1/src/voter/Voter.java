@@ -28,7 +28,7 @@ public class Voter extends Thread {
         try{
             Clerk clerk = Clerk.getInstance(0);
             Pollster pollster = Pollster.getInstance(0, 0, 0);
-            Station station = Station.getInstance(0, 0, 0);
+            Station station = Station.getInstance(2);
             VotingBooth votingBooth = VotingBooth.getInstance();
 
             while(true){
