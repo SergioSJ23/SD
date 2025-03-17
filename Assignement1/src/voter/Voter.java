@@ -1,7 +1,6 @@
 package voter;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Voter extends Thread {
@@ -25,6 +24,7 @@ public class Voter extends Thread {
         this.liePollester = liePollester;
         this.repeatVoter = repeatVoter;
         this.partyAodds = partyAodds;
+        this.maxVoters = maxVoters;
     }
 
     @Override
@@ -39,6 +39,7 @@ public class Voter extends Thread {
                 this.numPersons += 1;
                 Thread.sleep(rand.nextInt(6) + 5);
                 if(singleton.clerk.validate(this.id)){
+                    decrement();
                     System.out.println("Voter " + this.id + " is voting");
                     Thread.sleep(new Random().nextInt(5) + 5);
                     if(rand.nextInt(100) < this.partyAodds){
@@ -55,7 +56,6 @@ public class Voter extends Thread {
                     System.out.println("Voter " + this.id + " is leaving");
                 }
                 this.numPersons -= 1;
-                decrement();
                 if (maxVoters <= 0){
                     break;
                 }
