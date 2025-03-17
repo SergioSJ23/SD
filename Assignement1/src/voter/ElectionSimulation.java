@@ -40,8 +40,9 @@ public class ElectionSimulation {
         sc.close();
 
         for (int i = 0; i < numVoters; i++) {
+            new Voter(answerPollester, liePollester, repeatVoter, maxVoters).start();
             vote = ' ';
-            new Voter(i, vote, answerPollester, liePollester, repeatVoter, partyAodds, maxVoters).start();
+            new Voter(i, vote, answerPollester, liePollester, repeatVoter, partyAodds).start();
         }
     }
 }

@@ -12,25 +12,52 @@ public class Voter extends Thread {
     private int answerPollester;
     private int liePollester;
     private int repeatVoter;
+    private static int maxVoters;
+
+    public Voter (int answerPollester, int liePollester, int repeatVoter, int maxVoters) {
+
+        this.id = rand.nextInt(Integer.MAX_VALUE);
+        this.vote = rand.nextInt(2);
     private int partyAodds;
-    private  static int maxVoters;
     private Clerk clerk;
     private Station station;
     
-    public Voter (int id, char vote, int answerPollester, int liePollester, int repeatVoter, int partyAodds, int maxVoters){
+    public Voter (int id, char vote, int answerPollester, int liePollester, int repeatVoter, int partyAodds){
         this.id = id;
         this.vote = vote;
         this.answerPollester = answerPollester;
         this.liePollester = liePollester;
         this.repeatVoter = repeatVoter;
-        this.partyAodds = partyAodds;
         this.maxVoters = maxVoters;
+        this.partyAodds = partyAodds;
     }
 
+    // TODO: Implement monitors in the project
     @Override
     public void run(){
         try{
             Singleton singleton = Singleton.getInstance();
+            while(true){
+                if(singleton.station.checkCapacity()){
+                    System.out.println("Voter " + id + " is waiting outside");
+                }
+                Thread.sleep(rand.nextInt(5) + 5);
+                if(singleton.clerk.validate(id)){
+                    System.out.println("Voter " + id + " is voting");
+                    Thread.sleep(new Random().nextInt(5) + 5);
+                    singleton.clerk.vote(id, vote);
+                    System.out.println("Voter " + id + " voted");
+                }
+                else{
+                    System.out.println("Voter " + id + " is leaving");
+                }
+                decrement();
+                if (maxVoters <= 0){
+                    break;
+                }
+                reborn();
+            }
+            
             if(singleton.station.checkCapacity()){
                 System.out.println("Voter " + id + " is waiting outside");
             }
@@ -56,11 +83,6 @@ public class Voter extends Thread {
             else{
                 System.out.println("Voter " + id + " already voted");
             }
-            decrement();
-            if (maxVoters <= 0){
-                break;
-            }
-            reborn();
         }
         catch(InterruptedException e){
             e.printStackTrace();
@@ -81,7 +103,6 @@ public class Voter extends Thread {
     public void decrement(){
         this.maxVoters -= 1;
     }
-
     public int showId(){
         return id;
     }
