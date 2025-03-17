@@ -14,13 +14,15 @@ public class ElectionSimulation {
         int answerPollester;
         int liePollester;
         int repeatVoter;
-        char vote;
         int partyAodds;
+        int maxVoters;
 
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Enter the number of voters(min 3, max 10): ");
         numVoters = sc.nextInt();
+        System.out.println("Enter the max number of voters: ");
+        maxVoters = sc.nextInt();
         System.out.println("Enter max number of waiting voters(min 2, max 5): ");
         waitingQueue = sc.nextInt();
         System.out.println("Enter the percentage of votes party A will get(min 0, max 100): ");
@@ -37,8 +39,7 @@ public class ElectionSimulation {
         sc.close();
 
         for (int i = 0; i < numVoters; i++) {
-            vote = ' ';
-            new Voter(i, vote, answerPollester, liePollester, repeatVoter, partyAodds).start();
+            new Voter(answerPollester, liePollester, repeatVoter, partyAodds, maxVoters).start();
         }
     }
 }
