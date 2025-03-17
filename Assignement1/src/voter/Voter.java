@@ -14,7 +14,7 @@ public class Voter extends Thread {
     private int liePollester;
     private int repeatVoter;
     private final int partyAodds;
-    private static int maxVoters;
+    private int maxVoters;
     private int numPersons = 0;
     private ReentrantLock lock = new ReentrantLock();
   
@@ -55,7 +55,7 @@ public class Voter extends Thread {
                 }
                 this.numPersons -= 1;
                 singleton.pollster.inquire(this);
-                if (maxVoters <= 0){
+                if (this.maxVoters <= 0){
                     break;
                 }
                 reborn();
@@ -86,6 +86,6 @@ public class Voter extends Thread {
     }
 
     public void decrement(){
-        maxVoters -= 1;
+        this.maxVoters -= 1;
     }
 }
