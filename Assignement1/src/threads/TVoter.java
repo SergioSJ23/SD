@@ -81,12 +81,12 @@ public class TVoter extends Thread {
     }
 
     public void reborn(){
-        if (rand.nextInt(0,100) < this.repeatVoter){
+        if (rand.nextInt(0,100) > this.repeatVoter){
             synchronized(idList) {
                 while (idList.contains(this.id)) {
                     this.id = rand.nextInt(Integer.MAX_VALUE);
                 }
-                idList.add(this.id);  // Add the unique id to the list
+                idList.add(this.id);
             }
         }
     }

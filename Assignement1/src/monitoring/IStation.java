@@ -16,7 +16,6 @@ public class IStation {
 
     public void enterStation() {
         capacityMonitor.enter();
-        System.out.println("Voters inside: " + capacityMonitor.getVotersInside());
     }
 
     public void leaveStation() {
