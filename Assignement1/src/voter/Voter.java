@@ -1,7 +1,6 @@
 package voter;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Voter extends Thread {
 
@@ -16,8 +15,8 @@ public class Voter extends Thread {
     private final int partyAodds;
     private int maxVoters;
     private int numPersons = 0;
-    private ReentrantLock lock = new ReentrantLock();
-  
+    private final Object lock = new Object();
+    
     public Voter (int answerPollester, int liePollester, int repeatVoter, int partyAodds, int maxVoters){
         this.id = rand.nextInt(Integer.MAX_VALUE);
         this.answerPollester = answerPollester;
@@ -29,6 +28,8 @@ public class Voter extends Thread {
 
     @Override
     public void run(){
+
+        synchronized (this.lock){
         try{
             Clerk clerk = Clerk.getInstance(0);
             Pollster pollster = Pollster.getInstance(0, 0, 0);
@@ -38,6 +39,7 @@ public class Voter extends Thread {
             while(true){
                 if(!station.checkCapacity(this.numPersons)){
                 System.out.println("Voter " + this.id + " is waiting outside");
+                lock.wait();
                 }
                 System.out.println("Voter " + this.id + " is entering the station");
                 this.numPersons += 1;
@@ -58,6 +60,7 @@ public class Voter extends Thread {
                     System.out.println("Voter " + this.id + " is leaving");
                 }
                 this.numPersons -= 1;
+                lock.notify();
                 pollster.inquire(this);
                 if (this.maxVoters <= 0){
                     break;
@@ -68,6 +71,7 @@ public class Voter extends Thread {
         catch(InterruptedException e){
             e.printStackTrace();
         }
+    }
     }  
 
     public int showId(){
