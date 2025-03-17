@@ -14,7 +14,7 @@ public class Voter extends Thread {
     private static int maxVoters;
     private final Object lock = new Object();
     
-    public Voter (int answerPollester, int liePollester, int repeatVoter, int partyAodds, int max){
+    public Voter (int repeatVoter, int partyAodds, int max){
         this.id = rand.nextInt(Integer.MAX_VALUE);
         this.repeatVoter = repeatVoter;
         this.partyAodds = partyAodds;
