@@ -33,7 +33,8 @@ public class ElectionSimulation {
 
         for (int i = 0; i < numVoters; i++) {
             vote = rand.nextInt(2);
-            new Voter(i, vote, answerPollester, liePollester, repeatVoter).start();
+            int id = rand.nextInt(numVoters) + 1;
+            new Voter(id, vote, answerPollester, liePollester, repeatVoter).start();
         }
 
         
