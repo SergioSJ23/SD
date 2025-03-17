@@ -30,23 +30,27 @@ public class Voter extends Thread {
     @Override
     public void run(){
         try{
-            Singleton singleton = Singleton.getInstance();
+            Clerk clerk = Clerk.getInstance(0);
+            Pollster pollster = Pollster.getInstance(0, 0, 0);
+            Station station = Station.getInstance(0, 0, 0);
+            VotingBooth votingBooth = VotingBooth.getInstance();
+
             while(true){
-                if(!singleton.station.checkCapacity(this.numPersons)){
+                if(!station.checkCapacity(this.numPersons)){
                 System.out.println("Voter " + this.id + " is waiting outside");
                 }
                 System.out.println("Voter " + this.id + " is entering the station");
                 this.numPersons += 1;
                 Thread.sleep(rand.nextInt(6) + 5);
-                if(singleton.clerk.validate(this.id)){
+                if(clerk.validate(this.id)){
                     decrement();
                     System.out.println("Voter " + this.id + " is voting");
                     Thread.sleep(new Random().nextInt(5) + 5);
                     if(rand.nextInt(100) < this.partyAodds){
-                        singleton.votingBooth.vote(this.id, 'A');
+                        votingBooth.vote(this.id, 'A');
                         this.vote = 'A';
                     }else{
-                        singleton.votingBooth.vote(this.id, 'B');
+                        votingBooth.vote(this.id, 'B');
                         this.vote = 'B';
                     }
                 }
@@ -54,7 +58,7 @@ public class Voter extends Thread {
                     System.out.println("Voter " + this.id + " is leaving");
                 }
                 this.numPersons -= 1;
-                singleton.pollster.inquire(this);
+                pollster.inquire(this);
                 if (this.maxVoters <= 0){
                     break;
                 }
