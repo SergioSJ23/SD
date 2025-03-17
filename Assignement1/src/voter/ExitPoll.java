@@ -1,6 +1,7 @@
 package voter;
 
 public class ExitPoll {
+    private static ExitPoll instance;
     private int votesA = 0;
     private int votesB = 0;
 
@@ -19,5 +20,12 @@ public class ExitPoll {
 
     public int getVotesB(){
         return this.votesB;
+    }
+
+    public static ExitPoll getInstance(){
+        if (instance == null){
+            instance = new ExitPoll();
+        }
+        return instance;
     }
 }

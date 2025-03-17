@@ -2,6 +2,7 @@ package voter;
 
 public class Station {
 
+    private static Station instance;
     private int status;
     private final int capacity;
     private final int numVoters;
@@ -26,6 +27,13 @@ public class Station {
 
     public boolean checkCapacity(int numPersons){
         return numPersons < this.capacity;
+    }
+
+    public static Station getInstance(int status, int capacity, int numVoters){
+        if (instance == null){
+            instance = new Station( status, capacity, numVoters);
+        }
+        return instance;
     }
     
 }

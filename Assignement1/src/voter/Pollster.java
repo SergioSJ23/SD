@@ -6,6 +6,7 @@ public class Pollster {
 
     Random rand = new Random();
 
+    private static Pollster instance;
     private int votersInquire;
     private int answerPollester;
     private int liePollester;
@@ -33,4 +34,12 @@ public class Pollster {
             }
         }
     }
+
+    public static Pollster getInstance(int votersInquire, int answerPollester, int liePollester) {
+        if (instance == null) {
+           instance = new Pollster(votersInquire, answerPollester, liePollester);
+        }
+  
+        return instance;
+     }
 }

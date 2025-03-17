@@ -3,10 +3,11 @@ import java.util.ArrayList;
 
 public class Clerk {
 
+    private static Clerk instance;
     private int votingLimit;
     private final ArrayList<Integer> idList = new ArrayList<>();
 
-    public Clerk(int votingLimit){
+    private Clerk(int votingLimit){
         this.votingLimit = votingLimit;
     }
 
@@ -17,5 +18,12 @@ public class Clerk {
             this.idList.add(id);
             return true;
         }
-    }    
+    }
+
+    public static Clerk getInstance(int votingLimit){
+        if (instance == null){
+            instance = new Clerk(votingLimit);
+        }
+        return instance;
+    }
 }
