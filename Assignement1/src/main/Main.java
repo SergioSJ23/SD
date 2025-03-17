@@ -1,13 +1,18 @@
-package voter;
+package main;
 
 import java.util.Scanner;
+import monitoring.IClerk;
+import monitoring.IExitPoll;
+import monitoring.IPollster;
+import monitoring.IStation;
+import monitoring.IVotingBooth;
+import threads.TVoter;
 
-public class ElectionSimulation {
+public class Main {
     public static void main(String args[]) {
 
 
         int numVoters;
-        int waitingQueue;
         int numVotersInquired;
         int answerPollester;
         int liePollester;
@@ -37,13 +42,6 @@ public class ElectionSimulation {
                 capacity = 3;
             }else{
                 capacity = Integer.parseInt(input);
-            }
-            System.out.println("Enter max number of waiting voters(min 2, max 5): ");
-            input = sc.nextLine();
-            if(input.isEmpty()){
-                waitingQueue = 5;
-            }else{
-                waitingQueue = Integer.parseInt(input);
             }
             System.out.println("Enter the percentage of votes party A will get(min 0, max 100): ");
             input = sc.nextLine();
@@ -83,15 +81,15 @@ public class ElectionSimulation {
         }
 
         // Instantiate the variables with the correct values
-        Station station = Station.getInstance(capacity);
-        Clerk clerk = Clerk.getInstance(maxVoters);
-        ExitPoll exitPoll = ExitPoll.getInstance();
-        Pollster pollster = Pollster.getInstance(numVotersInquired, answerPollester, liePollester);
+        IStation station = IStation.getInstance(capacity);
+        IClerk clerk = IClerk.getInstance(maxVoters);
+        IExitPoll exitPoll = IExitPoll.getInstance();
+        IPollster pollster = IPollster.getInstance(numVotersInquired, answerPollester, liePollester);
         
-        VotingBooth votingBooth = VotingBooth.getInstance();
+        IVotingBooth votingBooth = IVotingBooth.getInstance();
 
         for (int i = 0; i < numVoters; i++) {
-            new Voter(repeatVoter, partyAodds, maxVoters).start();
+            new TVoter(repeatVoter, partyAodds, maxVoters).start();
         }
     }
 }

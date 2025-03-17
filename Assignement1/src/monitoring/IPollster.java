@@ -1,23 +1,24 @@
-package voter;
+package monitoring;
 
 import java.util.Random;
+import threads.TVoter;
 
-public class Pollster {
+public class IPollster {
 
     Random rand = new Random();
 
-    private static Pollster instance;
+    private static IPollster instance;
     private int votersInquire;
     private int answerPollester;
     private int liePollester;
 
-    public Pollster(int votersInquire, int answerPollester, int liePollester){
+    public IPollster(int votersInquire, int answerPollester, int liePollester){
         this.votersInquire = votersInquire;
         this.answerPollester = answerPollester; 
         this.liePollester = liePollester;
     }
 
-    public void inquire(Voter voter){
+    public void inquire(TVoter voter){
         if(rand.nextInt(100) < votersInquire){
             if(rand.nextInt(100) < answerPollester){
                 if(rand.nextInt(100) > liePollester){   
@@ -35,9 +36,9 @@ public class Pollster {
         }
     }
 
-    public static Pollster getInstance(int votersInquire, int answerPollester, int liePollester) {
+    public static IPollster getInstance(int votersInquire, int answerPollester, int liePollester) {
         if (instance == null) {
-           instance = new Pollster(votersInquire, answerPollester, liePollester);
+           instance = new IPollster(votersInquire, answerPollester, liePollester);
         }
   
         return instance;

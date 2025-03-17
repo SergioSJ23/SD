@@ -1,8 +1,12 @@
-package voter;
+package threads;
 import java.util.ArrayList;
 import java.util.Random;
+import monitoring.IClerk;
+import monitoring.IPollster;
+import monitoring.IStation;
+import monitoring.IVotingBooth;
 
-public class Voter extends Thread {
+public class TVoter extends Thread {
 
     Random rand = new Random();
 
@@ -13,7 +17,7 @@ public class Voter extends Thread {
     private final int partyAodds;
     private static int maxVoters;
     
-    public Voter (int repeatVoter, int partyAodds, int max){
+    public TVoter (int repeatVoter, int partyAodds, int max){
         this.id = rand.nextInt(Integer.MAX_VALUE);
         this.repeatVoter = repeatVoter;
         this.partyAodds = partyAodds;
@@ -24,10 +28,10 @@ public class Voter extends Thread {
     public void run(){
 
         try{
-            Clerk clerk = Clerk.getInstance(0);
-            Pollster pollster = Pollster.getInstance(0, 0, 0);
-            Station station = Station.getInstance(0);
-            VotingBooth votingBooth = VotingBooth.getInstance();
+            IClerk clerk = IClerk.getInstance(0);
+            IPollster pollster = IPollster.getInstance(0, 0, 0);
+            IStation station = IStation.getInstance(0);
+            IVotingBooth votingBooth = IVotingBooth.getInstance();
 
             while(true){
 
@@ -53,9 +57,10 @@ public class Voter extends Thread {
                         votingBooth.vote(this.id, 'B');
                         this.vote = 'B';
                     }
+                    System.out.println("Voter " + this.id + " is leaving the Station");
                 }
                 else{
-                    System.out.println("Voter " + this.id + " is leaving");
+                    System.out.println("Voter " + this.id + " was kicked out");
                 }
                 station.leaveStation();
                 pollster.inquire(this);
