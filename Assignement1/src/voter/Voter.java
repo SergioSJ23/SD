@@ -1,6 +1,8 @@
 package voter;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Voter extends Thread {
 
@@ -13,7 +15,8 @@ public class Voter extends Thread {
     private int liePollester;
     private int repeatVoter;
     private static int maxVoters;
-
+    private int numPersons = 0;
+    private ReentrantLock lock = new ReentrantLock();
     public Voter (int answerPollester, int liePollester, int repeatVoter, int maxVoters) {
 
         this.id = rand.nextInt(Integer.MAX_VALUE);
@@ -30,9 +33,11 @@ public class Voter extends Thread {
         try{
             Singleton singleton = Singleton.getInstance();
             while(true){
-                if(singleton.station.checkCapacity()){
-                    System.out.println("Voter " + id + " is waiting outside");
+                if(!singleton.station.checkCapacity(numPersons)){
+                System.out.println("Voter " + id + " is waiting outside");
                 }
+                System.out.println("Voter " + id + " is entering the station");
+                numPersons += 1;
                 Thread.sleep(rand.nextInt(5) + 5);
                 if(singleton.clerk.validate(id)){
                     System.out.println("Voter " + id + " is voting");
@@ -43,6 +48,7 @@ public class Voter extends Thread {
                 else{
                     System.out.println("Voter " + id + " is leaving");
                 }
+                numPersons -= 1;
                 decrement();
                 if (maxVoters <= 0){
                     break;
