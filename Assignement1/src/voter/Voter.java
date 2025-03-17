@@ -13,17 +13,17 @@ public class Voter extends Thread {
     private int liePollester;
     private int repeatVoter;
     private final int partyAodds;
-    private int maxVoters;
+    private static int maxVoters;
     private int numPersons = 0;
     private final Object lock = new Object();
     
-    public Voter (int answerPollester, int liePollester, int repeatVoter, int partyAodds, int maxVoters){
+    public Voter (int answerPollester, int liePollester, int repeatVoter, int partyAodds, int max){
         this.id = rand.nextInt(Integer.MAX_VALUE);
         this.answerPollester = answerPollester;
         this.liePollester = liePollester;
         this.repeatVoter = repeatVoter;
         this.partyAodds = partyAodds;
-        this.maxVoters = maxVoters;
+        maxVoters = max;
     }
 
     @Override
@@ -46,6 +46,7 @@ public class Voter extends Thread {
                 Thread.sleep(rand.nextInt(6) + 5);
                 if(clerk.validate(this.id)){
                     decrement();
+                    System.out.println(maxVoters);
                     System.out.println("Voter " + this.id + " is voting");
                     Thread.sleep(new Random().nextInt(5) + 5);
                     if(rand.nextInt(100) < this.partyAodds){
@@ -62,7 +63,7 @@ public class Voter extends Thread {
                 this.numPersons -= 1;
                 lock.notify();
                 pollster.inquire(this);
-                if (this.maxVoters <= 0){
+                if (maxVoters <= 0){
                     break;
                 }
                 reborn();
@@ -94,6 +95,6 @@ public class Voter extends Thread {
     }
 
     public void decrement(){
-        this.maxVoters -= 1;
+        maxVoters -= 1;
     }
 }
