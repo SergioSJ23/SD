@@ -47,7 +47,7 @@ public class ElectionSimulation {
         VotingBooth votingBooth = VotingBooth.getInstance();
 
         for (int i = 0; i < numVoters; i++) {
-            new Voter(answerPollester, liePollester, repeatVoter, partyAodds, maxVoters).start();
+            new Voter(repeatVoter, partyAodds, maxVoters).start();
         }
     }
 }

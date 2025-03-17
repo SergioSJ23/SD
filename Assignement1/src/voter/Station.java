@@ -7,6 +7,7 @@ public class Station {
     private final int capacity;
     private final int numVoters;
     private int numVotes = 0;
+    private int votersInside = 0;
 
     public Station(int status, int capacity, int numVoters){
         this.status = status;
@@ -25,8 +26,8 @@ public class Station {
         return this.status;   
     }
 
-    public boolean checkCapacity(int numPersons){
-        return numPersons < this.capacity;
+    public boolean checkCapacity(){
+        return this.votersInside < this.capacity;
     }
 
     public static Station getInstance(int status, int capacity, int numVoters){
@@ -35,5 +36,12 @@ public class Station {
         }
         return instance;
     }
+
+    public void enterStation(){
+        this.votersInside += 1;
+    }
     
+    public void leaveStation(){
+        this.votersInside -= 1;
+    }
 }
