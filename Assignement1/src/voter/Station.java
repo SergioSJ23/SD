@@ -1,20 +1,19 @@
 package voter;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Station {
 
     private static Station instance;
     private int status = 0;
     private final int capacity;
-    private int numVotes = 0;
     private int votersInside = 0;
+    private final ReentrantLock lock = new ReentrantLock();
+
 
     public Station(int capacity){
-        
         this.capacity = capacity;
-        
     }
-
-
 
     public boolean checkCapacity(){
         return this.votersInside < this.capacity;
@@ -32,10 +31,20 @@ public class Station {
 
     public void enterStation(){
         this.votersInside += 1;
+        if (this.votersInside >= this.capacity) {
+            lock.lock();
+        }
+        System.out.println(this.votersInside);
     }
     
     public void leaveStation(){
-        this.votersInside -= 1;
+        if (lock.isLocked()){
+            try {
+                this.votersInside -= 1;
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 
     public void close(){

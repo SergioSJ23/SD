@@ -27,14 +27,14 @@ public class ElectionSimulation {
             System.out.println("Enter the max number of voters: ");
             input = sc.nextLine();
             if(input.isEmpty()){
-                maxVoters = 5;
+                maxVoters = 10;
             }else{
                 maxVoters = Integer.parseInt(input);
             }
             System.out.println("What is the capacity of the station for voters: ");
             input = sc.nextLine();
             if(input.isEmpty()){
-                capacity = 5;
+                capacity = 3;
             }else{
                 capacity = Integer.parseInt(input);
             }

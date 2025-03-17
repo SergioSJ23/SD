@@ -12,7 +12,6 @@ public class Voter extends Thread {
     private final int repeatVoter;
     private final int partyAodds;
     private static int maxVoters;
-    private final Object lock = new Object();
     
     public Voter (int repeatVoter, int partyAodds, int max){
         this.id = rand.nextInt(Integer.MAX_VALUE);
@@ -24,11 +23,10 @@ public class Voter extends Thread {
     @Override
     public void run(){
 
-        synchronized (this.lock){
         try{
             Clerk clerk = Clerk.getInstance(0);
             Pollster pollster = Pollster.getInstance(0, 0, 0);
-            Station station = Station.getInstance(2);
+            Station station = Station.getInstance(0);
             VotingBooth votingBooth = VotingBooth.getInstance();
 
             while(true){
@@ -39,10 +37,9 @@ public class Voter extends Thread {
 
                 if(!station.checkCapacity()){
                 System.out.println("Voter " + this.id + " is waiting outside");
-                lock.wait();
                 }
-                System.out.println("Voter " + this.id + " is entering the station");
                 station.enterStation();
+                System.out.println("Voter " + this.id + " is entering the station");
 
                 Thread.sleep(rand.nextInt(6) + 5);
                 if(clerk.validate(this.id)){
@@ -61,7 +58,6 @@ public class Voter extends Thread {
                     System.out.println("Voter " + this.id + " is leaving");
                 }
                 station.leaveStation();
-                lock.notify();
                 pollster.inquire(this);
                 reborn();
             }
@@ -69,7 +65,6 @@ public class Voter extends Thread {
         catch(InterruptedException e){
             e.printStackTrace();
         }
-    }
     }  
 
     public int showId(){
