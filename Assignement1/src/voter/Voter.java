@@ -1,4 +1,5 @@
 package voter;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -7,6 +8,7 @@ public class Voter extends Thread {
 
     Random rand = new Random();
 
+    private final static ArrayList<Integer> idList = new ArrayList<>();
     private int id;
     private char vote;
     private int answerPollester;
@@ -66,6 +68,21 @@ public class Voter extends Thread {
         }
     }  
 
+    public void reborn(){
+        if (rand.nextInt(0,100) < repeatVoter){
+            synchronized(idList) {
+                while (idList.contains(this.id)) {
+                    this.id = rand.nextInt(Integer.MAX_VALUE);
+                }
+                idList.add(this.id);  // Add the unique id to the list
+            }
+        }
+    }
+
+    public void decrement(){
+        this.maxVoters -= 1;
+    }
+    
     public int showId(){
         return id;
     }

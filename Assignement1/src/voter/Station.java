@@ -11,8 +11,6 @@ public class Station {
         this.status = status;
         this.capacity = capacity;
         this.numVoters = numVoters;
-
-
     }
 
     public int close(){
@@ -29,6 +27,5 @@ public class Station {
 
     public boolean checkCapacity(int numPersons){
         return numPersons < capacity;
-    }
-    
+    } 
 }
