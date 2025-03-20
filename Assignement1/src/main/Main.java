@@ -1,19 +1,12 @@
 package main;
 
-import capacity.ICapacity;
-import capacity.MCapacity;
-import exitpoll.IExitPoll_all;
-import exitpoll.MExitPoll;
+import capacity.*;
+import exitpoll.*;
 import java.util.Scanner;
-import station.IStation_all;
-import station.MStation;
-import threads.TClerk;
-import threads.TPollster;
-import threads.TVoter;
-import votelimit.IVoteLimit_all;
-import votelimit.MVoteLimit;
-import votesbooth.IVotesBooth_all;
-import votesbooth.MVotesBooth;
+import station.*;
+import threads.*;
+import votelimit.*;
+import votesbooth.*;
 
 public class Main {
     public static void main(String args[]) {
@@ -43,14 +36,14 @@ public class Main {
         IStation_all station = MStation.getInstance(capacityCap);
         ICapacity capacity = MCapacity.getInstance(capacityCap);
         IVoteLimit_all voteLimit = MVoteLimit.getInstance();
-        IExitPoll_all votes = MExitPoll.getInstance();
+        IExitPoll_all exitPoll = MExitPoll.getInstance();
         IVotesBooth_all votesBooth = MVotesBooth.getInstance();
 
         new Thread(TClerk.getInstance()).start();
         new Thread(TPollster.getInstance()).start();
 
         for (int i = 0; i < numVoters; i++) {
-            new TVoter(i).start();
+            new TVoter(i).start(station, votesBooth, exitPoll);
         }
 
         
