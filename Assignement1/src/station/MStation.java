@@ -1,9 +1,9 @@
-package monitoring;
+package station;
 
-import contracts.ICapacity;
-import contracts.IStation;
+import capacity.ICapacity;
+import capacity.MCapacity;
 
-public class MStation implements IStation{
+public class MStation implements IStation_all{
 
     private int status = 0;
     private final ICapacity capacityMonitor;
@@ -12,7 +12,7 @@ public class MStation implements IStation{
         this.capacityMonitor = new MCapacity(capacity);
     }
 
-    public static IStation getInstance(int capacity) {
+    public static IStation_all getInstance(int capacity) {
         return new MStation(capacity); // Retorna a interface IStation
     }
 

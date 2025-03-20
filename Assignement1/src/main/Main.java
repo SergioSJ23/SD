@@ -1,13 +1,13 @@
 package main;
 
 import java.util.Scanner;
-import monitoring.ExitPoll;
-import monitoring.MStation;
-import monitoring.VotingBooth;
-import contracts.IStation;
+import station.IStation_all;
+import station.MStation;
 import threads.TClerk;
 import threads.TPollster;
 import threads.TVoter;
+import votesbooth.IVotesBooth;
+import votesbooth.MVotesBooth;
 
 public class Main {
     public static void main(String args[]) {
@@ -82,12 +82,11 @@ public class Main {
         }
 
         // Instantiate the variables with the correct values
-        IStation station = MStation.getInstance(capacity);
+        IStation_all station = MStation.getInstance(capacity);
         TClerk clerk = TClerk.getInstance(maxVoters);
-        ExitPoll exitPoll = ExitPoll.getInstance();
         TPollster pollster = TPollster.getInstance(numVotersInquired, answerPollester, liePollester);
         
-        VotingBooth votingBooth = VotingBooth.getInstance();
+        IVotesBooth votingBooth = MVotesBooth.getInstance();
 
         for (int i = 0; i < numVoters; i++) {
             new TVoter(i, repeatVoter, partyAodds, maxVoters).start();

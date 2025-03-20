@@ -1,6 +1,5 @@
-package monitoring;
+package votes;
 
-import contracts.IVotes;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MVotes implements IVotes{
@@ -8,6 +7,10 @@ public class MVotes implements IVotes{
     private int votesA = 0;
     private int votesB = 0;
     private final ReentrantLock lock = new ReentrantLock();
+
+    public static IVotes getInstance() {
+        return new MVotes();
+    }
 
     @Override
     public void increment(int voteId) {

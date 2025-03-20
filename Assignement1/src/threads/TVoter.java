@@ -1,9 +1,10 @@
 package threads;
-import contracts.IStation;
 import java.util.ArrayList;
 import java.util.Random;
-import monitoring.MStation;
-import monitoring.VotingBooth;
+import station.IStation_all;
+import station.MStation;
+import votesbooth.IVotesBooth;
+import votesbooth.MVotesBooth;
 
 public class TVoter extends Thread {
 
@@ -29,8 +30,8 @@ public class TVoter extends Thread {
         try{
             TClerk clerk = TClerk.getInstance(0);
             TPollster pollster = TPollster.getInstance(0, 0, 0);
-            IStation station = MStation.getInstance(100);
-            VotingBooth votingBooth = VotingBooth.getInstance();
+            IStation_all station = MStation.getInstance(100);
+            IVotesBooth votingBooth = MVotesBooth.getInstance();
 
             while(maxVoters > 0){
 
@@ -46,10 +47,10 @@ public class TVoter extends Thread {
                     System.out.println("Voter " + this.id + " is voting");
                     Thread.sleep(new Random().nextInt(5) + 5);
                     if(rand.nextInt(100) < this.partyAodds){
-                        votingBooth.vote(this.id, 'A');
+                        votingBooth.vote( 'A');
                         this.vote = 'A';
                     }else{
-                        votingBooth.vote(this.id, 'B');
+                        votingBooth.vote( 'B');
                         this.vote = 'B';
                     }
                     System.out.println("Voter " + this.id + " is leaving the Station");

@@ -1,13 +1,20 @@
-package monitoring;
+package votesbooth;
 
-import contracts.IVotesBooth;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MVotesBooth implements IVotesBooth{
 
     private int votesA = 0;
     private int votesB = 0;
+    private static IVotesBooth instance;
     private final ReentrantLock lock = new ReentrantLock();
+
+    public static IVotesBooth getInstance() {
+        if (instance == null) {
+            instance = new MVotesBooth();
+        }
+        return instance;
+    }
 
     @Override
     public void vote(char vote) {
@@ -23,13 +30,11 @@ public class MVotesBooth implements IVotesBooth{
         }
     }
 
-    @Override
-    public void incrementA() {
+    private void incrementA() {
         votesA++;
     }
 
-    @Override
-    public void incrementB() {
+    private void incrementB() {
         votesB++;
     }
 

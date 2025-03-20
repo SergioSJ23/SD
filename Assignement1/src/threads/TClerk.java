@@ -1,15 +1,15 @@
 package threads;
 
-import contracts.IStation;
-import contracts.IVoteLimit;
-import monitoring.MStation;
-import monitoring.MVoteLimit;
+import station.IStation_all;
+import station.MStation;
+import votelimit.IVoteLimit;
+import votelimit.MVoteLimit;
 
 public class TClerk extends Thread{
 
     private static TClerk instance;
     private final IVoteLimit voteLimitMonitor;
-    IStation station = MStation.getInstance(100);
+    IStation_all station = MStation.getInstance(100);
     
     private TClerk(int votingLimit) {
         this.voteLimitMonitor = new MVoteLimit(votingLimit);
