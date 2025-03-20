@@ -13,15 +13,12 @@ public class TVoter extends Thread {
     private final static ArrayList<Integer> idList = new ArrayList<>();
     private int id;
     private char vote;
-    private final int repeatVoter;
-    private final int partyAodds;
-    private static int maxVoters;
+    private final int repeatVoter = 50;
+    private final int partyAodds = 50;
+    private static int maxVoters = 10;
     
-    public TVoter (int i, int repeatVoter, int partyAodds, int max){
+    public TVoter (int i){
         this.id = i;
-        this.repeatVoter = repeatVoter;
-        this.partyAodds = partyAodds;
-        maxVoters = max;
     }
 
     @Override

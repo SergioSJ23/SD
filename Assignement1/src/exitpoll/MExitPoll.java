@@ -1,17 +1,17 @@
-package votes;
+package exitpoll;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MVotes implements IVotes_all{
+public class MExitPoll implements IExitPoll_all{
 
     private int votesA = 0;
     private int votesB = 0;
     private final ReentrantLock lock = new ReentrantLock();
-    private static IVotes_all instance;
+    private static IExitPoll_all instance;
 
-    public static IVotes_all getInstance() {
+    public static IExitPoll_all getInstance() {
         if (instance == null) {
-            instance = new MVotes();
+            instance = new MExitPoll();
         }
         return instance;
     }

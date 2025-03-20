@@ -8,13 +8,8 @@ import votelimit.MVoteLimit;
 public class TClerk extends Thread{
 
     private static TClerk instance;
-    private final IVoteLimit_all voteLimitMonitor;
     IStation_all station = MStation.getInstance(100);
     
-    private TClerk(int votingLimit) {
-        this.voteLimitMonitor = new MVoteLimit(votingLimit);
-    }
-
     public boolean validate(int id) {
         boolean isValid = voteLimitMonitor.validateAndAdd(id);
         if (isValid) {
@@ -23,9 +18,9 @@ public class TClerk extends Thread{
         return isValid;
     }
 
-    public static TClerk getInstance(int votingLimit){
+    public static TClerk getInstance(){
         if (instance == null) {
-            instance = new TClerk(votingLimit);
+            instance = new TClerk();
         }
         return instance;
     }

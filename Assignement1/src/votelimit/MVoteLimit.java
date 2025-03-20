@@ -5,19 +5,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MVoteLimit implements IVoteLimit_all{
 
-    private final int votingLimit;
+    private final int votingLimit = 10;
     private int numVotes = 0;
     private final ArrayList<Integer> idList = new ArrayList<>();
     private final ReentrantLock lock = new ReentrantLock();
     private static IVoteLimit_all instance;
 
-    public MVoteLimit(int votingLimit) {
-        this.votingLimit = votingLimit;
-    }
-
-    public static IVoteLimit_all getInstance(int maxVoters) {
+    public static IVoteLimit_all getInstance() {
         if (instance == null) {
-            instance = new MVoteLimit(maxVoters);
+            instance = new MVoteLimit();
         }
         return instance;
     }

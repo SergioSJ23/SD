@@ -7,16 +7,13 @@ public class TPollster extends Thread{
     Random rand = new Random();
 
     private static TPollster instance;
-    private final int votersInquire;
-    private final int answerPollester;
-    private final int liePollester;
+    private final int votersInquire = 50;
+    private final int answerPollester = 50;
+    private final int liePollester = 50;
 
-    public TPollster(int votersInquire, int answerPollester, int liePollester){
-        this.votersInquire = votersInquire;
-        this.answerPollester = answerPollester; 
-        this.liePollester = liePollester;
+    private TPollster(){
     }
-
+    
     public void inquire(TVoter voter){
         if(rand.nextInt(100) < votersInquire){
             if(rand.nextInt(100) < answerPollester){
@@ -35,9 +32,9 @@ public class TPollster extends Thread{
         }
     }
 
-    public static TPollster getInstance(int votersInquire, int answerPollester, int liePollester) {
+    public static TPollster getInstance() {
         if (instance == null) {
-           instance = new TPollster(votersInquire, answerPollester, liePollester);
+           instance = new TPollster();
         }
   
         return instance;

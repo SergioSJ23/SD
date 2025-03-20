@@ -2,6 +2,8 @@ package main;
 
 import capacity.ICapacity;
 import capacity.MCapacity;
+import exitpoll.IExitPoll_all;
+import exitpoll.MExitPoll;
 import java.util.Scanner;
 import station.IStation_all;
 import station.MStation;
@@ -10,8 +12,6 @@ import threads.TPollster;
 import threads.TVoter;
 import votelimit.IVoteLimit_all;
 import votelimit.MVoteLimit;
-import votes.IVotes_all;
-import votes.MVotes;
 import votesbooth.IVotesBooth_all;
 import votesbooth.MVotesBooth;
 
@@ -20,12 +20,6 @@ public class Main {
 
 
         int numVoters;
-        int numVotersInquired;
-        int answerPollester;
-        int liePollester;
-        int repeatVoter;
-        int partyAodds;
-        int maxVoters;
         int capacityCap;
 
         try (Scanner sc = new Scanner(System.in)) {
@@ -36,13 +30,6 @@ public class Main {
             }else{
                 numVoters = Integer.parseInt(input);
             }
-            System.out.println("Enter the max number of voters: ");
-            input = sc.nextLine();
-            if(input.isEmpty()){
-                maxVoters = 10;
-            }else{
-                maxVoters = Integer.parseInt(input);
-            }
             System.out.println("What is the capacity of the station for voters: ");
             input = sc.nextLine();
             if(input.isEmpty()){
@@ -50,55 +37,20 @@ public class Main {
             }else{
                 capacityCap = Integer.parseInt(input);
             }
-            System.out.println("Enter the percentage of votes party A will get(min 0, max 100): ");
-            input = sc.nextLine();
-            if(input.isEmpty()){
-                partyAodds = 50;
-            }else{
-                partyAodds = Integer.parseInt(input);
-            }
-            System.out.println("Enter the percentage of voters the pollster will inquire(min 0, max 100): ");
-            input = sc.nextLine();
-            if(input.isEmpty()){
-                numVotersInquired = 50;
-            }else{
-                numVotersInquired = Integer.parseInt(input);
-            }
-            System.out.println("Enter the percentage of people that answer the pollster(min 0, max 100): ");
-            input = sc.nextLine();
-            if(input.isEmpty()){
-                answerPollester = 50;
-            }else{
-                answerPollester= Integer.parseInt(input);
-            }
-            System.out.println("Enter the percentage of people that lie to the pollster(min 0, max 100): ");
-            input = sc.nextLine();
-            if(input.isEmpty()){
-                liePollester = 50;
-            }else{
-                liePollester = Integer.parseInt(input);
-            }
-            System.out.println("Enter the percentage of people that vote more than once(min 0, max 100): ");
-            input = sc.nextLine();
-            if(input.isEmpty()){
-                repeatVoter = 50;
-            }else{
-                repeatVoter = Integer.parseInt(input);
-            }
         }
 
         // Instantiate the variables with the correct values
         IStation_all station = MStation.getInstance(capacityCap);
         ICapacity capacity = MCapacity.getInstance(capacityCap);
-        IVoteLimit_all voteLimit = MVoteLimit.getInstance(maxVoters);
-        IVotes_all votes = MVotes.getInstance();
+        IVoteLimit_all voteLimit = MVoteLimit.getInstance();
+        IExitPoll_all votes = MExitPoll.getInstance();
         IVotesBooth_all votesBooth = MVotesBooth.getInstance();
 
-        new Thread(TClerk.getInstance(maxVoters)).start();
-        new Thread(TPollster.getInstance(numVotersInquired, answerPollester, liePollester)).start();
+        new Thread(TClerk.getInstance()).start();
+        new Thread(TPollster.getInstance()).start();
 
         for (int i = 0; i < numVoters; i++) {
-            new TVoter(i, repeatVoter, partyAodds, maxVoters).start();
+            new TVoter(i).start();
         }
 
         
