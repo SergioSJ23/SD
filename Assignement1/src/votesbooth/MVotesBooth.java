@@ -5,9 +5,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MVotesBooth implements IVotesBooth_all{
 
+    private static int numVotes = 0;
     private static int votesA = 0;
     private static int votesB = 0;
-    private final static int partyAodds = 50;
+    private static final int votingLimit = 50;
+    private final static int partyAOdds = 50;
     private static IVotesBooth_all instance;
     private final ReentrantLock lock = new ReentrantLock();
         
@@ -25,7 +27,7 @@ public class MVotesBooth implements IVotesBooth_all{
     public void vote() {
         lock.lock();
         try {
-            if(rand.nextInt(100) < partyAodds){
+            if(rand.nextInt(100) < partyAOdds){
                 incrementA();
             }else{
                 incrementB();
@@ -37,10 +39,12 @@ public class MVotesBooth implements IVotesBooth_all{
 
     private void incrementA() {
         votesA++;
+        numVotes++;
     }
 
     private void incrementB() {
         votesB++;
+        numVotes++;
     }
 
     @Override
