@@ -1,13 +1,18 @@
 package votesbooth;
 
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MVotesBooth implements IVotesBooth_all{
 
-    private int votesA = 0;
-    private int votesB = 0;
+    private static int votesA = 0;
+    private static int votesB = 0;
+    private final static int partyAodds = 50;
     private static IVotesBooth_all instance;
     private final ReentrantLock lock = new ReentrantLock();
+        
+    private final Random rand = new Random();
+
 
     public static IVotesBooth_all getInstance() {
         if (instance == null) {
@@ -17,12 +22,12 @@ public class MVotesBooth implements IVotesBooth_all{
     }
 
     @Override
-    public void vote(char vote) {
+    public void vote() {
         lock.lock();
         try {
-            if (vote == 'A') {
+            if(rand.nextInt(100) < partyAodds){
                 incrementA();
-            } else {
+            }else{
                 incrementB();
             }
         } finally {

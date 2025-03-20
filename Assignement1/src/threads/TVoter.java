@@ -27,7 +27,7 @@ public class TVoter extends Thread {
         try{
             while(true){
                 station.enterStation();
-                votesBooth.vote( 'A');
+                votesBooth.vote();
                 station.leaveStation();
                 reborn();
             }
