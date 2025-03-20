@@ -1,11 +1,17 @@
 package main;
 
+import capacity.ICapacity;
+import capacity.MCapacity;
 import java.util.Scanner;
 import station.IStation_all;
 import station.MStation;
 import threads.TClerk;
 import threads.TPollster;
 import threads.TVoter;
+import votelimit.IVoteLimit_all;
+import votelimit.MVoteLimit;
+import votes.IVotes_all;
+import votes.MVotes;
 import votesbooth.IVotesBooth_all;
 import votesbooth.MVotesBooth;
 
@@ -20,7 +26,7 @@ public class Main {
         int repeatVoter;
         int partyAodds;
         int maxVoters;
-        int capacity;
+        int capacityCap;
 
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("Enter the number of voters(min 3, max 10): ");
@@ -40,9 +46,9 @@ public class Main {
             System.out.println("What is the capacity of the station for voters: ");
             input = sc.nextLine();
             if(input.isEmpty()){
-                capacity = 3;
+                capacityCap = 3;
             }else{
-                capacity = Integer.parseInt(input);
+                capacityCap = Integer.parseInt(input);
             }
             System.out.println("Enter the percentage of votes party A will get(min 0, max 100): ");
             input = sc.nextLine();
@@ -82,14 +88,19 @@ public class Main {
         }
 
         // Instantiate the variables with the correct values
-        IStation_all station = MStation.getInstance(capacity);
-        TClerk clerk = TClerk.getInstance(maxVoters);
-        TPollster pollster = TPollster.getInstance(numVotersInquired, answerPollester, liePollester);
-        
-        IVotesBooth_all votingBooth = MVotesBooth.getInstance();
+        IStation_all station = MStation.getInstance(capacityCap);
+        ICapacity capacity = MCapacity.getInstance(capacityCap);
+        IVoteLimit_all voteLimit = MVoteLimit.getInstance(maxVoters);
+        IVotes_all votes = MVotes.getInstance();
+        IVotesBooth_all votesBooth = MVotesBooth.getInstance();
+
+        new Thread(TClerk.getInstance(maxVoters)).start();
+        new Thread(TPollster.getInstance(numVotersInquired, answerPollester, liePollester)).start();
 
         for (int i = 0; i < numVoters; i++) {
             new TVoter(i, repeatVoter, partyAodds, maxVoters).start();
         }
+
+        
     }
 }

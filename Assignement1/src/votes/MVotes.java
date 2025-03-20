@@ -7,9 +7,13 @@ public class MVotes implements IVotes_all{
     private int votesA = 0;
     private int votesB = 0;
     private final ReentrantLock lock = new ReentrantLock();
+    private static IVotes_all instance;
 
     public static IVotes_all getInstance() {
-        return new MVotes();
+        if (instance == null) {
+            instance = new MVotes();
+        }
+        return instance;
     }
 
     @Override

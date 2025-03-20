@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MCapacity implements ICapacity {
 
     private final int capacity;
+    private static ICapacity instance;
     private int votersInside = 0;
     private final ReentrantLock lock = new ReentrantLock();
     private final Condition spaceAvailable = lock.newCondition(); // Condição para espera
@@ -13,6 +14,16 @@ public class MCapacity implements ICapacity {
     public MCapacity(int capacity) {
         this.capacity = capacity;
     }
+
+    public static ICapacity getInstance(int capacity) {
+        if (instance == null) {
+            instance = new MCapacity(capacity);
+        }
+        return instance;
+    }
+
+
+
 
     @Override
     public void enter() {

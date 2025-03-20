@@ -9,10 +9,19 @@ public class MVoteLimit implements IVoteLimit_all{
     private int numVotes = 0;
     private final ArrayList<Integer> idList = new ArrayList<>();
     private final ReentrantLock lock = new ReentrantLock();
+    private static IVoteLimit_all instance;
 
     public MVoteLimit(int votingLimit) {
         this.votingLimit = votingLimit;
     }
+
+    public static IVoteLimit_all getInstance(int maxVoters) {
+        if (instance == null) {
+            instance = new MVoteLimit(maxVoters);
+        }
+        return instance;
+    }
+
 
     @Override
     public boolean validateAndAdd(int id) {
