@@ -2,14 +2,14 @@ package votesbooth;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MVotesBooth implements IVotesBooth{
+public class MVotesBooth implements IVotesBooth_all{
 
     private int votesA = 0;
     private int votesB = 0;
-    private static IVotesBooth instance;
+    private static IVotesBooth_all instance;
     private final ReentrantLock lock = new ReentrantLock();
 
-    public static IVotesBooth getInstance() {
+    public static IVotesBooth_all getInstance() {
         if (instance == null) {
             instance = new MVotesBooth();
         }

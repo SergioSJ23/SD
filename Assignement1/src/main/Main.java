@@ -6,7 +6,7 @@ import station.MStation;
 import threads.TClerk;
 import threads.TPollster;
 import threads.TVoter;
-import votesbooth.IVotesBooth;
+import votesbooth.IVotesBooth_all;
 import votesbooth.MVotesBooth;
 
 public class Main {
@@ -86,7 +86,7 @@ public class Main {
         TClerk clerk = TClerk.getInstance(maxVoters);
         TPollster pollster = TPollster.getInstance(numVotersInquired, answerPollester, liePollester);
         
-        IVotesBooth votingBooth = MVotesBooth.getInstance();
+        IVotesBooth_all votingBooth = MVotesBooth.getInstance();
 
         for (int i = 0; i < numVoters; i++) {
             new TVoter(i, repeatVoter, partyAodds, maxVoters).start();

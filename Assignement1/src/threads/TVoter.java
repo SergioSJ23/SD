@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import station.IStation_all;
 import station.MStation;
-import votesbooth.IVotesBooth;
+import votesbooth.IVotesBooth_all;
 import votesbooth.MVotesBooth;
 
 public class TVoter extends Thread {
@@ -31,7 +31,7 @@ public class TVoter extends Thread {
             TClerk clerk = TClerk.getInstance(0);
             TPollster pollster = TPollster.getInstance(0, 0, 0);
             IStation_all station = MStation.getInstance(100);
-            IVotesBooth votingBooth = MVotesBooth.getInstance();
+            IVotesBooth_all votingBooth = MVotesBooth.getInstance();
 
             while(maxVoters > 0){
 

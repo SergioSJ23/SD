@@ -1,8 +1,6 @@
 package votelimit;
 
-public interface IVoteLimit_all  {
+public interface IVoteLimit_all extends IVoteLimit_Clerk, IVoteLimit_Voter {
     
-    boolean validateAndAdd(int id); //Voter & Clerk
-    boolean isLimitReached(); //Clerk
     
 }

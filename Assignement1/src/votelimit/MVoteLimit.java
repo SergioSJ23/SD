@@ -3,7 +3,7 @@ package votelimit;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MVoteLimit implements IVoteLimit{
+public class MVoteLimit implements IVoteLimit_all{
 
     private final int votingLimit;
     private int numVotes = 0;

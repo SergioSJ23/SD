@@ -2,13 +2,13 @@ package votes;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MVotes implements IVotes{
+public class MVotes implements IVotes_all{
 
     private int votesA = 0;
     private int votesB = 0;
     private final ReentrantLock lock = new ReentrantLock();
 
-    public static IVotes getInstance() {
+    public static IVotes_all getInstance() {
         return new MVotes();
     }
 

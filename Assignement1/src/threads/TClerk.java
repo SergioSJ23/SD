@@ -2,13 +2,13 @@ package threads;
 
 import station.IStation_all;
 import station.MStation;
-import votelimit.IVoteLimit;
+import votelimit.IVoteLimit_all;
 import votelimit.MVoteLimit;
 
 public class TClerk extends Thread{
 
     private static TClerk instance;
-    private final IVoteLimit voteLimitMonitor;
+    private final IVoteLimit_all voteLimitMonitor;
     IStation_all station = MStation.getInstance(100);
     
     private TClerk(int votingLimit) {
