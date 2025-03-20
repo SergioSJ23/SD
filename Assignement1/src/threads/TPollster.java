@@ -1,18 +1,17 @@
-package monitoring;
+package threads;
 
 import java.util.Random;
-import threads.TVoter;
 
-public class IPollster {
+public class TPollster extends Thread{
 
     Random rand = new Random();
 
-    private static IPollster instance;
-    private int votersInquire;
-    private int answerPollester;
-    private int liePollester;
+    private static TPollster instance;
+    private final int votersInquire;
+    private final int answerPollester;
+    private final int liePollester;
 
-    public IPollster(int votersInquire, int answerPollester, int liePollester){
+    public TPollster(int votersInquire, int answerPollester, int liePollester){
         this.votersInquire = votersInquire;
         this.answerPollester = answerPollester; 
         this.liePollester = liePollester;
@@ -36,9 +35,9 @@ public class IPollster {
         }
     }
 
-    public static IPollster getInstance(int votersInquire, int answerPollester, int liePollester) {
+    public static TPollster getInstance(int votersInquire, int answerPollester, int liePollester) {
         if (instance == null) {
-           instance = new IPollster(votersInquire, answerPollester, liePollester);
+           instance = new TPollster(votersInquire, answerPollester, liePollester);
         }
   
         return instance;

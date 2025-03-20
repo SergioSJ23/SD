@@ -1,11 +1,11 @@
 package monitoring;
 
-public class IExitPoll {
+public class ExitPoll {
 
-    private static IExitPoll instance;
+    private static ExitPoll instance;
     private final MVotes votesMonitor;
 
-    private IExitPoll() {
+    private ExitPoll() {
         this.votesMonitor = new MVotes();
     }
 
@@ -26,9 +26,9 @@ public class IExitPoll {
         return votesMonitor.getVotes();
     }
 
-    public static IExitPoll getInstance() {
+    public static ExitPoll getInstance() {
         if (instance == null) {
-            instance = new IExitPoll();
+            instance = new ExitPoll();
         }
         return instance;
     }

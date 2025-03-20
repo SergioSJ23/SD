@@ -1,10 +1,9 @@
 package threads;
+import contracts.IStation;
 import java.util.ArrayList;
 import java.util.Random;
-import monitoring.IClerk;
-import monitoring.IPollster;
-import monitoring.IStation;
-import monitoring.IVotingBooth;
+import monitoring.MStation;
+import monitoring.VotingBooth;
 
 public class TVoter extends Thread {
 
@@ -17,8 +16,8 @@ public class TVoter extends Thread {
     private final int partyAodds;
     private static int maxVoters;
     
-    public TVoter (int repeatVoter, int partyAodds, int max){
-        this.id = rand.nextInt(Integer.MAX_VALUE);
+    public TVoter (int i, int repeatVoter, int partyAodds, int max){
+        this.id = i;
         this.repeatVoter = repeatVoter;
         this.partyAodds = partyAodds;
         maxVoters = max;
@@ -28,16 +27,12 @@ public class TVoter extends Thread {
     public void run(){
 
         try{
-            IClerk clerk = IClerk.getInstance(0);
-            IPollster pollster = IPollster.getInstance(0, 0, 0);
-            IStation station = IStation.getInstance(0);
-            IVotingBooth votingBooth = IVotingBooth.getInstance();
+            TClerk clerk = TClerk.getInstance(0);
+            TPollster pollster = TPollster.getInstance(0, 0, 0);
+            IStation station = MStation.getInstance(100);
+            VotingBooth votingBooth = VotingBooth.getInstance();
 
-            while(true){
-
-                if (maxVoters <= 0){
-                    break;
-                }
+            while(maxVoters > 0){
 
                 if(!station.checkCapacity()){
                 System.out.println("Voter " + this.id + " is waiting outside");
@@ -84,7 +79,7 @@ public class TVoter extends Thread {
         if (rand.nextInt(0,100) > this.repeatVoter){
             synchronized(idList) {
                 while (idList.contains(this.id)) {
-                    this.id = rand.nextInt(Integer.MAX_VALUE);
+                    this.id = idList.get(idList.size() - 1)+1;
                 }
                 idList.add(this.id);
             }

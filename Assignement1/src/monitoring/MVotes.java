@@ -1,13 +1,15 @@
 package monitoring;
 
+import contracts.IVotes;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MVotes {
+public class MVotes implements IVotes{
 
     private int votesA = 0;
     private int votesB = 0;
     private final ReentrantLock lock = new ReentrantLock();
 
+    @Override
     public void increment(int voteId) {
         lock.lock();
         try {
@@ -21,6 +23,7 @@ public class MVotes {
         }
     }
 
+    @Override
     public int getVotesA() {
         lock.lock();
         try {
@@ -30,6 +33,7 @@ public class MVotes {
         }
     }
 
+    @Override
     public int getVotesB() {
         lock.lock();
         try {
@@ -40,6 +44,7 @@ public class MVotes {
     }
 
     // Optional: Return both votes in one method
+    @Override
     public int[] getVotes() {
         lock.lock();
         try {

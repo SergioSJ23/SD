@@ -1,9 +1,10 @@
 package monitoring;
 
+import contracts.IVoteLimit;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MVoteLimit {
+public class MVoteLimit implements IVoteLimit{
 
     private final int votingLimit;
     private int numVotes = 0;
@@ -14,6 +15,7 @@ public class MVoteLimit {
         this.votingLimit = votingLimit;
     }
 
+    @Override
     public boolean validateAndAdd(int id) {
         lock.lock();
         try {
@@ -30,7 +32,8 @@ public class MVoteLimit {
         }
     }
 
-    private boolean isLimitReached() {
+    @Override
+    public boolean isLimitReached() {
         return numVotes >= votingLimit;
     }
 }

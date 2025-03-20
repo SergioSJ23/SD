@@ -1,11 +1,12 @@
 package main;
 
 import java.util.Scanner;
-import monitoring.IClerk;
-import monitoring.IExitPoll;
-import monitoring.IPollster;
-import monitoring.IStation;
-import monitoring.IVotingBooth;
+import monitoring.ExitPoll;
+import monitoring.MStation;
+import monitoring.VotingBooth;
+import contracts.IStation;
+import threads.TClerk;
+import threads.TPollster;
 import threads.TVoter;
 
 public class Main {
@@ -81,15 +82,15 @@ public class Main {
         }
 
         // Instantiate the variables with the correct values
-        IStation station = IStation.getInstance(capacity);
-        IClerk clerk = IClerk.getInstance(maxVoters);
-        IExitPoll exitPoll = IExitPoll.getInstance();
-        IPollster pollster = IPollster.getInstance(numVotersInquired, answerPollester, liePollester);
+        IStation station = MStation.getInstance(capacity);
+        TClerk clerk = TClerk.getInstance(maxVoters);
+        ExitPoll exitPoll = ExitPoll.getInstance();
+        TPollster pollster = TPollster.getInstance(numVotersInquired, answerPollester, liePollester);
         
-        IVotingBooth votingBooth = IVotingBooth.getInstance();
+        VotingBooth votingBooth = VotingBooth.getInstance();
 
         for (int i = 0; i < numVoters; i++) {
-            new TVoter(repeatVoter, partyAodds, maxVoters).start();
+            new TVoter(i, repeatVoter, partyAodds, maxVoters).start();
         }
     }
 }

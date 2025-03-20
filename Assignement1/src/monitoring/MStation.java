@@ -1,40 +1,44 @@
 package monitoring;
 
-public class IStation {
+import contracts.ICapacity;
+import contracts.IStation;
 
-    private static IStation instance;
+public class MStation implements IStation{
+
     private int status = 0;
-    private final MCapacity capacityMonitor;
+    private final ICapacity capacityMonitor;
 
-    private IStation(int capacity) {
+    private MStation(int capacity) {
         this.capacityMonitor = new MCapacity(capacity);
     }
 
+    public static IStation getInstance(int capacity) {
+        return new MStation(capacity); // Retorna a interface IStation
+    }
+
+    @Override
     public boolean checkCapacity() {
         return capacityMonitor.canEnter();
     }
 
+    @Override
     public void enterStation() {
         capacityMonitor.enter();
     }
 
+    @Override
     public void leaveStation() {
         capacityMonitor.leave();
     }
 
+    @Override
     public void close() {
         this.status = 1;
     }
 
+    @Override
     public int getStatus() {
         return this.status;
     }
 
-    public static IStation getInstance(int capacity) {
-        if (instance == null) {
-            System.out.println("Station: Creating new station with capacity " + capacity);
-            instance = new IStation(capacity);
-        }
-        return instance;
-    }
 }

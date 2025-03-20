@@ -1,11 +1,11 @@
 package monitoring;
 
-public class IVotingBooth {
+public class VotingBooth {
 
-    private static IVotingBooth instance;
+    private static VotingBooth instance;
     private final MVotesBooth votesMonitor;
 
-    private IVotingBooth() {
+    private VotingBooth() {
         this.votesMonitor = new MVotesBooth();
     }
 
@@ -18,9 +18,9 @@ public class IVotingBooth {
         return votesMonitor.getVotes();
     }
 
-    public static IVotingBooth getInstance() {
+    public static VotingBooth getInstance() {
         if (instance == null) {
-            instance = new IVotingBooth();
+            instance = new VotingBooth();
         }
         return instance;
     }
