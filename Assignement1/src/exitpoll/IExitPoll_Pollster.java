@@ -1,7 +1,9 @@
 package exitpoll;
 
 public interface  IExitPoll_Pollster {
-    int getVotesA(); //Clerk
-    int getVotesB(); //Clerk
-    int[] getVotes(); //Clerk
+    int getVotesA();
+    int getVotesB(); 
+    int[] getVotes(); 
+    void inquire(int id, char voteVoter); //Pollster
+    void answer(); //Pollster
 }

@@ -1,10 +1,10 @@
 package threads;
-import exitpoll.IExitPoll_all;
+import exitpoll.IExitPoll_Voter;
 import java.util.ArrayList;
 import java.util.Random;
-import station.*;
-import votesbooth.*;
-import exitpoll.*;
+import station.IStation_Voter;
+import votesbooth.IVotesBooth_Voter;
+
 
 public class TVoter extends Thread {
 
@@ -12,32 +12,39 @@ public class TVoter extends Thread {
 
     private final static ArrayList<Integer> idList = new ArrayList<>();
     private int id;
+    private static char voteVoter;
     private final int repeatVoter = 50;
     private final IStation_Voter station;
     private final IVotesBooth_Voter votesBooth;
+    private final IExitPoll_Voter exitPoll;
     
-    public TVoter (int i, IStation_all station, IVotesBooth_all votesBooth, IExitPoll_all exitPoll){
+    public TVoter (int i, IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll){
         this.id = i;
         this.station = station;
         this.votesBooth = votesBooth;
+        this.exitPoll = exitPoll;
     }
 
     @Override
-    public void run(){
-        try{
-            while(true){
-                station.enterStation();
+    public void run() {
+
+        try {
+            while (true) {
+                if (rand.nextInt(0,100) > 50){
+                    voteVoter = 'A';
+                } else {
+                    voteVoter = 'B';
+                }
+                station.enterStation(id);
                 votesBooth.vote();
-                station.leaveStation();
+                station.leaveStation(id);
+                exitPoll.inquire(id, voteVoter);
                 reborn();
             }
-        }
-        catch(InterruptedException e){
+        } catch (Exception e) { 
             e.printStackTrace();
         }
-    }  
-
-
+    }
 
     public void reborn(){
         if (rand.nextInt(0,100) > this.repeatVoter){

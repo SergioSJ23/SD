@@ -1,40 +1,32 @@
 package threads;
 
-import java.util.Random;
+import exitpoll.IExitPoll_Pollster;
 
 public class TPollster extends Thread{
 
-    Random rand = new Random();
-
     private static TPollster instance;
-    private final int votersInquire = 50;
-    private final int answerPollester = 50;
-    private final int liePollester = 50;
+    private final IExitPoll_Pollster exitPoll;
 
-    private TPollster(){
+
+    private TPollster(IExitPoll_Pollster exitPoll){
+        this.exitPoll = exitPoll;
     }
     
-    public void inquire(TVoter voter){
-        if(rand.nextInt(100) < votersInquire){
-            if(rand.nextInt(100) < answerPollester){
-                if(rand.nextInt(100) > liePollester){   
-                    System.out.println("Pollster: Voter " + voter.showId() + " is voting for party " + voter.getVote() + " (true)");
-                }else{
-                    if(voter.getVote() == 'A'){
-                        System.out.println("Pollster: Voter " + voter.showId() + " is voting for party B (lie)");
-                    }else{
-                        System.out.println("Pollster: Voter " + voter.showId() + " is voting for party A (lie)");
-                    }
-                }
-            }else{
-                System.out.println("Pollster: Voter " + voter.showId() + " doesn't want to answer");
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                exitPoll.answer();
             }
+        } catch (Exception e) { 
+            e.printStackTrace();
         }
+
     }
 
-    public static TPollster getInstance() {
+    public static TPollster getInstance(IExitPoll_Pollster exitpoll) {
         if (instance == null) {
-           instance = new TPollster();
+           instance = new TPollster(exitpoll);
         }
   
         return instance;

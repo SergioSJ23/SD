@@ -30,17 +30,35 @@ public class Main {
             }
         }
 
-        // Instantiate the variables with the correct values
-        IStation_all station = MStation.getInstance(capacityCap);
-        IExitPoll_all exitPoll = MExitPoll.getInstance();
-        IVotesBooth_all votesBooth = MVotesBooth.getInstance();
+        //monitors
+        IStation_all station;
+        IExitPoll_all exitPoll;
+        IVotesBooth_all votesBooth;
 
-        new Thread(TClerk.getInstance()).start();
-        new Thread(TPollster.getInstance()).start();
+        //threads
+        Thread tpollster;
+        Thread tclerk;
+
+
+        // Instantiate the variables with the correct values
+        station = MStation.getInstance(capacityCap);
+        exitPoll = MExitPoll.getInstance();
+        votesBooth = MVotesBooth.getInstance();
+
+        // Create the threads
+        tclerk = new Thread(TClerk.getInstance());
+        tclerk.start();
+
+        tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll));
+        tpollster.start();
+
+
+
         for (int i = 0; i < numVoters; i++) {
-            new TVoter(i).start(station, votesBooth, exitPoll);
+            new TVoter(i,(IStation_Voter)station,(IVotesBooth_Voter)votesBooth, (IExitPoll_Voter)exitPoll).start();
         }
 
+        
         
     }
 }
