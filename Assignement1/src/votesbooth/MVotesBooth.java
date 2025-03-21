@@ -9,7 +9,6 @@ public class MVotesBooth implements IVotesBooth_all{
     private static int votesA = 0;
     private static int votesB = 0;
     private static final int votingLimit = 50;
-    private final static int partyAOdds = 50;
     private static IVotesBooth_all instance;
     private final ReentrantLock lock = new ReentrantLock();
         
@@ -24,10 +23,10 @@ public class MVotesBooth implements IVotesBooth_all{
     }
 
     @Override
-    public void vote() {
+    public void vote(char vote) {
         lock.lock();
         try {
-            if(rand.nextInt(100) < partyAOdds){
+            if(vote == 'A'){
                 incrementA();
             }else{
                 incrementB();

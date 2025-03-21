@@ -52,13 +52,11 @@ public class Main {
         tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll));
         tpollster.start();
 
-
-
         for (int i = 0; i < numVoters; i++) {
             new TVoter(i,(IStation_Voter)station,(IVotesBooth_Voter)votesBooth, (IExitPoll_Voter)exitPoll).start();
         }
 
-        
+
         
     }
 }

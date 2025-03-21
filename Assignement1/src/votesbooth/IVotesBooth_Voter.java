@@ -1,5 +1,5 @@
 package votesbooth;
 
 public interface IVotesBooth_Voter {
-    void vote();
+    void vote(char vote);
 }

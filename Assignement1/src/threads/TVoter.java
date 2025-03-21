@@ -14,9 +14,11 @@ public class TVoter extends Thread {
     private int id;
     private static char voteVoter;
     private final int repeatVoter = 50;
+    private final int partyOdds = 50;
     private final IStation_Voter station;
     private final IVotesBooth_Voter votesBooth;
     private final IExitPoll_Voter exitPoll;
+    private static boolean canVote;
     
     public TVoter (int i, IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll){
         this.id = i;
@@ -30,13 +32,20 @@ public class TVoter extends Thread {
 
         try {
             while (true) {
-                if (rand.nextInt(0,100) > 50){
+                if (rand.nextInt(0,100) > this.partyOdds){
                     voteVoter = 'A';
                 } else {
                     voteVoter = 'B';
                 }
                 station.enterStation(id);
-                votesBooth.vote();
+                canVote = station.validate(id);
+                if(canVote){
+                    votesBooth.vote(voteVoter);
+                    System.out.println("Voter " + id + " voted for party " + voteVoter);
+                }
+                else{
+                    System.out.println("Voter " + id + " was not able to vote");
+                }
                 station.leaveStation(id);
                 exitPoll.inquire(id, voteVoter);
                 reborn();
