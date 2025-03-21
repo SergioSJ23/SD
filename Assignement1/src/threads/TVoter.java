@@ -1,25 +1,23 @@
 package threads;
+
 import exitpoll.IExitPoll_Voter;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import station.IStation_Voter;
 import votesbooth.IVotesBooth_Voter;
 
-
 public class TVoter extends Thread {
-
-    Random rand = new Random();
 
     private final static ArrayList<Integer> idList = new ArrayList<>();
     private int id;
-    private static char voteVoter;
-    private final int repeatVoter = 50;
+    private char voteVoter;
+    private final int repeatVoter = 10;
     private final int partyOdds = 50;
     private final IStation_Voter station;
     private final IVotesBooth_Voter votesBooth;
     private final IExitPoll_Voter exitPoll;
-    private static boolean canVote;
-    
+    private boolean valid;
+
     public TVoter (int i, IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll){
         this.id = i;
         this.station = station;
@@ -29,40 +27,42 @@ public class TVoter extends Thread {
 
     @Override
     public void run() {
-
         try {
             while (true) {
-                if (rand.nextInt(0,100) > this.partyOdds){
-                    voteVoter = 'A';
-                } else {
-                    voteVoter = 'B';
+                idList.add(this.id);
+                chooseVote();
+                station.enterStation(this.id);
+                this.valid = station.present(this.id);
+                if (this.valid) {
+                    votesBooth.vote(this.voteVoter);
+                    System.out.println("Voter " + this.id + " voted for party " + this.voteVoter);
                 }
-                station.enterStation(id);
-                canVote = station.validate(id);
-                if(canVote){
-                    votesBooth.vote(voteVoter);
-                    System.out.println("Voter " + id + " voted for party " + voteVoter);
-                }
-                else{
-                    System.out.println("Voter " + id + " was not able to vote");
-                }
-                station.leaveStation(id);
-                exitPoll.inquire(id, voteVoter);
+                station.leaveStation(this.id);
+                exitPoll.inquire(this.id, this.voteVoter);
                 reborn();
             }
-        } catch (Exception e) { 
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void reborn(){
-        if (rand.nextInt(0,100) > this.repeatVoter){
-            synchronized(idList) {
-                while (idList.contains(this.id)) {
-                    this.id = idList.get(idList.size() - 1)+1;
-                }
-                idList.add(this.id);
+    private synchronized void reborn() {
+        if (ThreadLocalRandom.current().nextInt(0, 100) >= this.repeatVoter) {
+            synchronized (idList) {
+                this.id = idList.get(idList.size() - 1) + 1;
+                idList.add(this.id); // Ensures the list is updated with the new ID
             }
+            System.out.println("NEW");
+        } else {
+            System.out.println("REPEATED");
+        }
+    }
+
+    private void chooseVote(){
+        if (ThreadLocalRandom.current().nextInt(0, 100) >= this.partyOdds) {
+            this.voteVoter = 'A';
+        } else {
+            this.voteVoter = 'B';
         }
     }
 }

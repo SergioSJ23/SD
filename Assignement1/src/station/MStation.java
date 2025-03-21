@@ -1,30 +1,26 @@
 package station;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MStation implements IStation_all{
+public class MStation implements IStation_all {
 
     private int status = 0;
-    private static boolean isIdReady = false;
-    private static boolean isIdValid;
-    private static int idValidation;
-    private static int votersInside = 0;
     private final ReentrantLock lock = new ReentrantLock();
-    private final ArrayList<Integer> idList = new ArrayList<>();
-    private static IStation_all instance;
-    private final Condition spaceAvailable = lock.newCondition();
-    private final Condition validateVoter = lock.newCondition();
-    private final Condition validateClerk = lock.newCondition();
-    private static BlockingQueue<Integer> queue;
+    private final HashSet<Integer> idSet = new HashSet<>();
+    private static MStation instance;
+    private final Condition voterCondition = lock.newCondition();
+    private final Condition clerkCondition = lock.newCondition();
+    private final BlockingQueue<Integer> queue;
 
+    private final BlockingQueue<Integer> validationQueue = new LinkedBlockingQueue<>();
+    private boolean isIdValid = false;  // Flag to notify voter if ID is validated
 
     private MStation(int capacity) {
-        queue = new LinkedBlockingQueue<>(capacity);
-        
+        this.queue = new LinkedBlockingQueue<>(capacity);
     }
 
     public static IStation_all getInstance(int capacity) {
@@ -45,18 +41,16 @@ public class MStation implements IStation_all{
     }
 
     @Override
-    public boolean validate(int id) {
+    public boolean present(int id) {
         lock.lock();
         try {
-            idValidation = id; 
-            isIdReady = true; 
-            validateVoter.signal(); 
-
-            while (isIdReady ){
-                validateClerk.await();
+            validationQueue.put(id);
+            System.out.println("Voter " + id + " has presented their ID.");
+            clerkCondition.signal();
+            while (validationQueue.contains(id)) {
+                voterCondition.await();  // Wait until validation is complete
             }
-
-            return isIdValid; 
+            return this.isIdValid;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return false;
@@ -69,21 +63,21 @@ public class MStation implements IStation_all{
     public void validateAndAdd() {
         lock.lock();
         try {
-            while (!isIdReady) {
-                validateVoter.await();
+            while (validationQueue.isEmpty()) {
+                clerkCondition.await();
             }
+            int id = validationQueue.take();
+            if (idSet.contains(id)) {
 
-            if (idList.contains(idValidation)) {
-                System.out.println("Voter " + idValidation + " rejected (duplicate ID)");
-                isIdValid = false; 
+                System.out.println("Voter " + id + " rejected (duplicate ID).");
+                this.isIdValid = false;  // Mark as invalid
             } else {
-                idList.add(idValidation); 
-                System.out.println("Voter " + idValidation + " validated and added to the list");
-                isIdValid = true; 
+                idSet.add(id);
+                System.out.println("Voter " + id + " validated and added to the list.");
+                this.isIdValid = true;  // Mark as valid
             }
 
-            isIdReady = false; 
-            validateClerk.signal();
+            voterCondition.signal();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
@@ -113,5 +107,4 @@ public class MStation implements IStation_all{
     public int getStatus() {
         return this.status;
     }
-
 }
