@@ -39,7 +39,9 @@ public class TVoter extends Thread {
                 }
                 station.leaveStation(this.id);
                 exitPoll.inquire(this.id, this.voteVoter);
-                reborn();
+                if (votesBooth.isVotingComplete())
+                    reborn();
+                
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -85,7 +85,7 @@ public class MExitPoll implements IExitPoll_all{
     }
 
     @Override
-    public void answer(){
+    public void answer() throws InterruptedException {
         try {
             lock.lock();
             willAnswer.await();
@@ -105,8 +105,6 @@ public class MExitPoll implements IExitPoll_all{
                 System.out.println("Voter " + voterId + " told the truth and voter for party " + vote);
             }
                 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             lock.unlock();
         }

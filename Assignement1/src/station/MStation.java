@@ -68,7 +68,7 @@ public class MStation implements IStation_all {
     }
 
     @Override
-    public void validateAndAdd() {
+    public void validateAndAdd() throws InterruptedException {
         lock.lock();
         try {
             while (validationQueue.isEmpty()) {
@@ -87,8 +87,6 @@ public class MStation implements IStation_all {
             }
 
             voterCondition.signal();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         } finally {
             lock.unlock();
         }

@@ -52,7 +52,7 @@ public class MVotesBooth implements IVotesBooth_all{
         votesB++;
         numVotes++;
     }
-
+    /* 
     @Override
     public int[] getVotes() {
         lock.lock();
@@ -61,7 +61,7 @@ public class MVotesBooth implements IVotesBooth_all{
         } finally {
             lock.unlock();
         }
-    }
+    }*/
 
     @Override
     public int getNumVotes() {

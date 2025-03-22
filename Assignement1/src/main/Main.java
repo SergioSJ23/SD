@@ -48,10 +48,10 @@ public class Main {
         votesBooth = MVotesBooth.getInstance();
 
         // Create the threads
-        tclerk = new Thread(TClerk.getInstance((IVotesBooth_Clerk) votesBooth));
+        tclerk = new Thread(TClerk.getInstance());
         tclerk.start();
 
-        tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll, (IVotesBooth_Pollster)votesBooth, (IStation_Pollster)station));
+        tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll));
         tpollster.start();
 
         for (int i = 0; i < numVoters; i++) {
@@ -63,11 +63,16 @@ public class Main {
         // Espera que todas as threads terminem
         for (TVoter voter : voters) {
             try {
+                voter.interrupt();
                 voter.join(); // Espera a thread terminar
+                System.out.println("Voter " + voter.getId() + " is DOOOOOOONNEEEE");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+        tclerk.interrupt();
+        tpollster.interrupt();
 
         // Wait for the threads to finish
         try {
