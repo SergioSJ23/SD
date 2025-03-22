@@ -1,6 +1,7 @@
 package main;
 
 import exitpoll.*;
+import java.util.List;
 import java.util.Scanner;
 import station.*;
 import threads.*;
@@ -12,6 +13,7 @@ public class Main {
 
         int numVoters;
         int capacityCap;
+        List<TVoter> voters = new java.util.ArrayList<>();
 
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("Enter the number of voters(min 3, max 10): ");
@@ -46,17 +48,37 @@ public class Main {
         votesBooth = MVotesBooth.getInstance();
 
         // Create the threads
-        tclerk = new Thread(TClerk.getInstance());
+        tclerk = new Thread(TClerk.getInstance((IVotesBooth_Clerk) votesBooth));
         tclerk.start();
 
-        tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll));
+        tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll, (IVotesBooth_Pollster)votesBooth, (IStation_Pollster)station));
         tpollster.start();
 
         for (int i = 0; i < numVoters; i++) {
-            new TVoter(i,(IStation_Voter)station,(IVotesBooth_Voter)votesBooth, (IExitPoll_Voter)exitPoll).start();
+            TVoter voter = new TVoter(i, (IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll);
+            voter.start();
+            voters.add(voter); // Adiciona a thread à lista
+        }
+
+        // Espera que todas as threads terminem
+        for (TVoter voter : voters) {
+            try {
+                voter.join(); // Espera a thread terminar
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Wait for the threads to finish
+        try {
+            tclerk.join();
+            tpollster.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
 
-        
     }
+
+
 }

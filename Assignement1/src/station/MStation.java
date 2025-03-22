@@ -1,6 +1,7 @@
 package station;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
@@ -9,12 +10,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MStation implements IStation_all {
 
     private int status = 0;
+    private final int maxVotes = 50;
     private final ReentrantLock lock = new ReentrantLock();
     private final HashSet<Integer> idSet = new HashSet<>();
     private static MStation instance;
     private final Condition voterCondition = lock.newCondition();
     private final Condition clerkCondition = lock.newCondition();
     private final BlockingQueue<Integer> queue;
+    private final Random rand = new Random();
 
     private final BlockingQueue<Integer> validationQueue = new LinkedBlockingQueue<>();
     private boolean isIdValid = false;  // Flag to notify voter if ID is validated
@@ -38,6 +41,11 @@ public class MStation implements IStation_all {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Override
+    public boolean isStationEmpty() {
+        return queue.isEmpty();
     }
 
     @Override
@@ -66,6 +74,7 @@ public class MStation implements IStation_all {
             while (validationQueue.isEmpty()) {
                 clerkCondition.await();
             }
+            Thread.sleep(rand.nextInt(6)+5);  // Simulate validation time
             int id = validationQueue.take();
             if (idSet.contains(id)) {
 
@@ -107,4 +116,6 @@ public class MStation implements IStation_all {
     public int getStatus() {
         return this.status;
     }
+
+
 }

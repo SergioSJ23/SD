@@ -23,9 +23,12 @@ public class MVotesBooth implements IVotesBooth_all{
     }
 
     @Override
-    public void vote(char vote) {
+    public void vote(char vote){
         lock.lock();
+        
         try {
+            try{
+            Thread.sleep(rand.nextInt(16));
             if(vote == 'A'){
                 incrementA();
             }else{
@@ -34,7 +37,11 @@ public class MVotesBooth implements IVotesBooth_all{
         } finally {
             lock.unlock();
         }
+        }catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
+    
 
     private void incrementA() {
         votesA++;
@@ -51,6 +58,26 @@ public class MVotesBooth implements IVotesBooth_all{
         lock.lock();
         try {
             return new int[]{votesA, votesB};
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public int getNumVotes() {
+        lock.lock();
+        try {
+            return numVotes;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public boolean isVotingComplete() {
+        lock.lock();
+        try {
+            return numVotes < votingLimit;
         } finally {
             lock.unlock();
         }

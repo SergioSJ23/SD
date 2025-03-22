@@ -28,7 +28,7 @@ public class TVoter extends Thread {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (votesBooth.isVotingComplete()) {                
                 idList.add(this.id);
                 chooseVote();
                 station.enterStation(this.id);
@@ -44,17 +44,36 @@ public class TVoter extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("Voter " + this.id + " is done");
     }
 
-    private synchronized void reborn() {
+    private void reborn() {
         if (ThreadLocalRandom.current().nextInt(0, 100) >= this.repeatVoter) {
+            // Gera um novo ID aleatório e adiciona à lista
+            int newId;
             synchronized (idList) {
-                this.id = idList.get(idList.size() - 1) + 1;
-                idList.add(this.id); // Ensures the list is updated with the new ID
+                do {
+                    newId = ThreadLocalRandom.current().nextInt(1000, 10000); // IDs de 4 dígitos
+                } while (idList.contains(newId)); // Garante que o ID seja único
+                idList.add(newId);
+                this.id = newId;
             }
-            System.out.println("NEW");
+            System.out.println("NEW Voter " + this.id + " created");
         } else {
-            System.out.println("REPEATED");
+            // Reutiliza um ID existente aleatório da lista
+            synchronized (idList) {
+                if (!idList.isEmpty()) {
+                    int randomIndex = ThreadLocalRandom.current().nextInt(idList.size());
+                    this.id = idList.get(randomIndex);
+                    System.out.println("REUSED Voter " + this.id + " reborn");
+                } else {
+                    // Caso a lista esteja vazia, gera um novo ID
+                    int newId = ThreadLocalRandom.current().nextInt(1000, 10000);
+                    idList.add(newId);
+                    this.id = newId;
+                    System.out.println("NEW Voter " + this.id + " created (fallback)");
+                }
+            }
         }
     }
 
