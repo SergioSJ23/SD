@@ -6,6 +6,7 @@ import station.MStation;
 public class TClerk extends Thread{
 
     private static TClerk instance;
+    private boolean limitReached;
     IStation_Clerk station = MStation.getInstance(100);
     
     
@@ -18,6 +19,11 @@ public class TClerk extends Thread{
         try {
             while (true) {
                 station.validateAndAdd();
+                limitReached = station.countVotes();
+                if (limitReached){
+                    System.out.println("limit");
+                    station.close();
+                }
             }
         } catch (InterruptedException e) { 
             System.out.println("Clerk interrupted");

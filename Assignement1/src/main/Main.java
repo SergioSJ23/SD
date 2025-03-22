@@ -1,8 +1,8 @@
 package main;
 
 import exitpoll.*;
-import gui.VotingStationGUI;
 import gui.VoterObserver;
+import gui.VotingStationGUI;
 import java.util.List;
 import java.util.Scanner;
 import station.*;
@@ -56,7 +56,7 @@ public class Main {
         // Register the observer
         VoterObserver observer = new VotingStationGUI();
         for (int i = 0; i < numVoters; i++) {
-            TVoter voter = new TVoter(i, (IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll);
+            TVoter voter = new TVoter((IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll);
             voter.registerObserver(observer);
             voter.start();
             voters.add(voter); // Adiciona a thread à lista

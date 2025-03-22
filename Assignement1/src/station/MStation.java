@@ -9,8 +9,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MStation implements IStation_all {
 
-    private int status = 0;
-    private final int maxVotes = 50;
+    private boolean status = false;
+    private static int limitVotes = 50;
     private final ReentrantLock lock = new ReentrantLock();
     private final HashSet<Integer> idSet = new HashSet<>();
     private static MStation instance;
@@ -20,6 +20,7 @@ public class MStation implements IStation_all {
     private final Random rand = new Random();
 
     private boolean isIdValid = false;  // Flag to notify voter if ID is validated
+    private boolean clerkReady = false; // Flag to prevent deadlock by tracking if clerk is waiting
 
     private MStation(int capacity) {
         this.queue = new LinkedBlockingQueue<>(capacity);
@@ -34,9 +35,12 @@ public class MStation implements IStation_all {
 
     @Override
     public void enterStation(int id) {
+        if (status) {
+            Thread.currentThread().interrupt();
+        }
         try {
-                queue.put(id);
-                System.out.println("Voter " + id + " entered the station.");
+            queue.put(id);
+            System.out.println("Voter " + id + " entered the station.");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -49,12 +53,16 @@ public class MStation implements IStation_all {
 
     @Override
     public boolean present(int id) {
-        while (id != queue.peek()){}
+        System.out.println(queue);
+        while (id != queue.peek()) {
+        }
+
         lock.lock();
         try {
             System.out.println("Voter " + id + " has presented their ID.");
+            clerkReady = true; // Notify that the clerk should proceed
             clerkCondition.signalAll();
-            voterCondition.await();  // Wait until validation is complete
+            voterCondition.await(); // Wait until validation is complete
             return this.isIdValid;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -68,20 +76,24 @@ public class MStation implements IStation_all {
     public void validateAndAdd() throws InterruptedException {
         lock.lock();
         try {
-            clerkCondition.await();
-            Thread.sleep(rand.nextInt(6)+5);  // Simulate validation time
-            int id = queue.peek();
-            if (idSet.contains(id)) {
+            while (!clerkReady) {
+                clerkCondition.await();
+            }
 
-                System.out.println("Voter " + id + " rejected (duplicate ID).");
+            int id = queue.peek();
+            System.out.println("Validating voter " + id);
+            Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
+            if (idSet.contains(id)) {
+                System.out.println("Voter " + id + " rejected (duplicate ID).\n");
                 this.isIdValid = false;  // Mark as invalid
             } else {
                 idSet.add(id);
                 System.out.println("Voter " + id + " validated and added to the list.");
                 this.isIdValid = true;  // Mark as valid
+                limitVotes -= 1;
             }
-
-            voterCondition.signalAll();
+            clerkReady = false; // Reset clerk readiness for the next voter
+            voterCondition.signalAll(); // Notify the voter to continue
         } finally {
             lock.unlock();
         }
@@ -102,19 +114,24 @@ public class MStation implements IStation_all {
 
     @Override
     public void close() {
+        status = true;
         lock.lock();
         try {
             voterCondition.signalAll();
             clerkCondition.signalAll();
-            System.out.println("Station is closing. All waiting threads are notified.");
         } finally {
             lock.unlock();
         }
+        System.out.println("Station is closing. All waiting threads are notified.");
     }
+
     @Override
-    public int getStatus() {
+    public boolean getStatus() {
         return this.status;
     }
 
-
+    @Override
+    public boolean countVotes() {
+        return limitVotes <= 0;
+    }
 }
