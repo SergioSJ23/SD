@@ -1,12 +1,26 @@
 package gui;
 
+import station.MStation;
+import votesbooth.IVotesBooth_all;
+import votesbooth.MVotesBooth;
+import main.*;
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class VotingStationGUI {
+    private static JPanel entrancePanel, votingStationPanel, exitPanel;
+    private static MStation station;
+    private static MVotesBooth votesBooth = MVotesBooth.getInstance();
+
     public static void main(String[] args) {
+        int capacitycap = Integer.parseInt(args[0]); // Obter capacitycap do argumento
+        station = MStation.getInstance(capacitycap); // Passar para MStation
         SwingUtilities.invokeLater(VotingStationGUI::createAndShowGUI);
     }
 
@@ -21,19 +35,19 @@ public class VotingStationGUI {
         gbc.weighty = 1;
         
         // Entrada da Voting Station
-        JPanel entrancePanel = createPanel("Entrance", Color.LIGHT_GRAY, 8);
+        entrancePanel = createPanel("Entrance", Color.LIGHT_GRAY, 8);
         gbc.gridx = 0;
         gbc.weightx = 0.3;
         mainPanel.add(entrancePanel, gbc);
         
         // Voting Station (Maior)
-        JPanel votingStationPanel = createVotingStationPanel("Voting Station", Color.WHITE, 4);
+        votingStationPanel = createVotingStationPanel("Voting Station", Color.WHITE, 4);
         gbc.gridx = 1;
         gbc.weightx = 0.4;
         mainPanel.add(votingStationPanel, gbc);
         
         // Saída da Voting Station
-        JPanel exitPanel = createExitPanel("Exit", Color.LIGHT_GRAY, 1);
+        exitPanel = createExitPanel("Exit", Color.LIGHT_GRAY, 1);
         gbc.gridx = 2;
         gbc.weightx = 0.3;
         mainPanel.add(exitPanel, gbc);
@@ -139,5 +153,31 @@ public class VotingStationGUI {
         panel.add(pollsterPanel, BorderLayout.SOUTH);
         
         return panel;
+    }
+
+    private static void updateGUI() {
+        SwingUtilities.invokeLater(() -> {
+            updatePanel(entrancePanel, station.getEntranceQueue());
+            updatePanel(votingStationPanel, station.getVotingQueue());
+            updatePanel(exitPanel, station.getExitQueue());
+        });
+    }
+    
+    private static void updatePanel(JPanel panel, List<Integer> voters) {
+        panel.removeAll();
+        for (int id : voters) {
+            JLabel voterLabel = new JLabel("Voter " + id, SwingConstants.CENTER);
+            voterLabel.setOpaque(true);
+            voterLabel.setBackground(Color.WHITE);
+            voterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            panel.add(voterLabel);
+        }
+        panel.revalidate();
+        panel.repaint();
+    }
+    
+    private static void startUpdating() {
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(VotingStationGUI::updateGUI, 0, 1, TimeUnit.SECONDS);
     }
 }
