@@ -1,6 +1,8 @@
 package main;
 
 import exitpoll.*;
+import gui.VotingStationGUI;
+import gui.VoterObserver;
 import java.util.List;
 import java.util.Scanner;
 import station.*;
@@ -9,8 +11,6 @@ import votesbooth.*;
 
 public class Main {
     public static void main(String args[]) {
-
-
         int numVoters;
         int capacityCap;
         List<TVoter> voters = new java.util.ArrayList<>();
@@ -41,7 +41,6 @@ public class Main {
         Thread tpollster;
         Thread tclerk;
 
-
         // Instantiate the variables with the correct values
         station = MStation.getInstance(capacityCap);
         exitPoll = MExitPoll.getInstance();
@@ -54,8 +53,11 @@ public class Main {
         tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll));
         tpollster.start();
 
+        // Register the observer
+        VoterObserver observer = new VotingStationGUI();
         for (int i = 0; i < numVoters; i++) {
             TVoter voter = new TVoter(i, (IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll);
+            voter.registerObserver(observer);
             voter.start();
             voters.add(voter); // Adiciona a thread à lista
         }
@@ -63,7 +65,6 @@ public class Main {
         // Espera que todas as threads terminem
         for (TVoter voter : voters) {
             try {
-                
                 voter.join(); // Espera a thread terminar
                 System.out.println("Voter " + voter.getId() + " is DOOOOOOONNEEEE");
             } catch (InterruptedException e) {
@@ -81,9 +82,5 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
     }
-
-
 }

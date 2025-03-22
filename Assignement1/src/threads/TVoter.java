@@ -1,6 +1,7 @@
 package threads;
 
 import exitpoll.IExitPoll_Voter;
+import gui.VoterObserver;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import station.IStation_Voter;
@@ -17,6 +18,7 @@ public class TVoter extends Thread {
     private final IVotesBooth_Voter votesBooth;
     private final IExitPoll_Voter exitPoll;
     private boolean valid;
+    private VoterObserver observer;
 
     public TVoter (int i, IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll){
         this.id = i;
@@ -25,23 +27,35 @@ public class TVoter extends Thread {
         this.exitPoll = exitPoll;
     }
 
+    public void registerObserver(VoterObserver observer) {
+        this.observer = observer;
+    }
+
+    private void notifyObserver(String state) {
+        if (observer != null) {
+            observer.updateVoterState(id, state);
+        }
+    }
+
     @Override
     public void run() {
         try {
-            while (votesBooth.isVotingComplete()) {                
+            while (votesBooth.isVotingComplete()) {
                 idList.add(this.id);
                 chooseVote();
+                notifyObserver("Entrance");
                 station.enterStation(this.id);
                 this.valid = station.present(this.id);
                 if (this.valid) {
+                    notifyObserver("Voting Station");
                     votesBooth.vote(this.voteVoter);
                     System.out.println("Voter " + this.id + " voted for party " + this.voteVoter);
                 }
                 station.leaveStation(this.id);
+                notifyObserver("Exit");
                 exitPoll.inquire(this.id, this.voteVoter);
                 if (votesBooth.isVotingComplete())
                     reborn();
-                
             }
             station.close();
         } catch (Exception e) {
