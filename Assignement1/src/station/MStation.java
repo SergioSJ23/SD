@@ -18,9 +18,12 @@ public class MStation implements IStation_all {
     private final Condition clerkCondition = lock.newCondition();
     private final BlockingQueue<Integer> queue;
     private final Random rand = new Random();
-
+    
     private final BlockingQueue<Integer> validationQueue = new LinkedBlockingQueue<>();
-    private boolean isIdValid = false;  // Flag to notify voter if ID is validated
+    private boolean isIdValid = false;  // Flag para notificar se o ID foi validado
+
+    // Flag de shutdown para sinalizar o encerramento
+    private volatile boolean shutdown = false;
 
     private MStation(int capacity) {
         this.queue = new LinkedBlockingQueue<>(capacity);
@@ -52,11 +55,22 @@ public class MStation implements IStation_all {
     public boolean present(int id) {
         lock.lock();
         try {
+            // Se já foi solicitado shutdown, não prossegue
+            if (shutdown) {
+                return false;
+            }
             validationQueue.put(id);
             System.out.println("Voter " + id + " has presented their ID.");
-            clerkCondition.signal();
+            clerkCondition.signal(); // Acorda a thread do clerk
+            // Enquanto o votante estiver na fila de validação...
             while (validationQueue.contains(id)) {
-                voterCondition.await();  // Wait until validation is complete
+                // Se shutdown foi solicitado, sai do laço
+                if (shutdown) {
+                    break;
+                }
+                // Usa awaitUninterruptibly se não quiser que interrupções afetem o fluxo,
+                // ou await() se preferir tratar InterruptedException.
+                voterCondition.await();
             }
             return this.isIdValid;
         } catch (InterruptedException e) {
@@ -105,15 +119,25 @@ public class MStation implements IStation_all {
         }
     }
 
+    /**
+     * Método para sinalizar o encerramento do monitor.
+     * Define a flag shutdown e chama signalAll() para liberar as threads que estejam aguardando.
+     */
     @Override
     public void close() {
-        this.status = 1;
+        lock.lock();
+        try {
+            shutdown = true;
+            voterCondition.signalAll();
+            clerkCondition.signalAll();
+            System.out.println("Station is closing. All waiting threads are notified.");
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public int getStatus() {
         return this.status;
     }
-
-
 }
