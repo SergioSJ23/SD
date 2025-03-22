@@ -43,6 +43,7 @@ public class TVoter extends Thread {
                     reborn();
                 
             }
+            station.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -107,9 +107,15 @@ public class MStation implements IStation_all {
 
     @Override
     public void close() {
-        this.status = 1;
+        lock.lock();
+        try {
+            voterCondition.signalAll();
+            clerkCondition.signalAll();
+            System.out.println("Station is closing. All waiting threads are notified.");
+        } finally {
+            lock.unlock();
+        }
     }
-
     @Override
     public int getStatus() {
         return this.status;

@@ -63,7 +63,7 @@ public class Main {
         // Espera que todas as threads terminem
         for (TVoter voter : voters) {
             try {
-                voter.interrupt();
+                
                 voter.join(); // Espera a thread terminar
                 System.out.println("Voter " + voter.getId() + " is DOOOOOOONNEEEE");
             } catch (InterruptedException e) {
