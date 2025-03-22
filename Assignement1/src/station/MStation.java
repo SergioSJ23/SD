@@ -19,7 +19,6 @@ public class MStation implements IStation_all {
     private final BlockingQueue<Integer> queue;
     private final Random rand = new Random();
 
-    private final BlockingQueue<Integer> validationQueue = new LinkedBlockingQueue<>();
     private boolean isIdValid = false;  // Flag to notify voter if ID is validated
 
     private MStation(int capacity) {
@@ -36,8 +35,8 @@ public class MStation implements IStation_all {
     @Override
     public void enterStation(int id) {
         try {
-            queue.put(id);
-            System.out.println("Voter " + id + " entered the station.");
+                queue.put(id);
+                System.out.println("Voter " + id + " entered the station.");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -50,14 +49,12 @@ public class MStation implements IStation_all {
 
     @Override
     public boolean present(int id) {
+        while (id != queue.peek()){}
         lock.lock();
         try {
-            validationQueue.put(id);
             System.out.println("Voter " + id + " has presented their ID.");
-            clerkCondition.signal();
-            while (validationQueue.contains(id)) {
-                voterCondition.await();  // Wait until validation is complete
-            }
+            clerkCondition.signalAll();
+            voterCondition.await();  // Wait until validation is complete
             return this.isIdValid;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -71,11 +68,9 @@ public class MStation implements IStation_all {
     public void validateAndAdd() throws InterruptedException {
         lock.lock();
         try {
-            while (validationQueue.isEmpty()) {
-                clerkCondition.await();
-            }
+            clerkCondition.await();
             Thread.sleep(rand.nextInt(6)+5);  // Simulate validation time
-            int id = validationQueue.take();
+            int id = queue.peek();
             if (idSet.contains(id)) {
 
                 System.out.println("Voter " + id + " rejected (duplicate ID).");
@@ -86,7 +81,7 @@ public class MStation implements IStation_all {
                 this.isIdValid = true;  // Mark as valid
             }
 
-            voterCondition.signal();
+            voterCondition.signalAll();
         } finally {
             lock.unlock();
         }
