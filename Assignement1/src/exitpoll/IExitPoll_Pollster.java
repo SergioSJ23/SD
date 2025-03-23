@@ -5,4 +5,5 @@ public interface  IExitPoll_Pollster {
     int getVotesB(); 
     int[] getVotes(); 
     void question() throws InterruptedException; //Pollster
+    void inquire() throws InterruptedException;
 }

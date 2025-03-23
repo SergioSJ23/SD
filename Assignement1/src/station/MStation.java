@@ -82,7 +82,6 @@ public void enterStation(int id) {
 
     @Override
     public boolean present(int id) {
-        System.out.println(queue);
         while (id != queue.peek()) {
         }
 
