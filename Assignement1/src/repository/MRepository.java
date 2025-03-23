@@ -43,119 +43,54 @@ public class MRepository implements IRepository_all {
 
     // ================= Métodos do VotesBooth =================
 
-    private void incrementA() {
+    @Override
+    public void VBincrementA() {
         votesA++;
         numVotes++;
     }
 
-    private void incrementB() {
+    @Override
+    public void VBincrementB() {
         votesB++;
         numVotes++;
     }
 
     // ================= Métodos do ExitPoll =================
 
-    /**
-     * Incrementa a contagem de votos do exit poll com base no ID do voto:
-     * 0 para voto 'A' e 1 para voto 'B'.
-     */
+
     @Override
-    public void incrementExit(int voteId) {
+    public void EPincrementA() {
         lock.lock();
         try {
-            System.out.println("Incrementing exit poll votes");
-            if (voteId == 0) {
-                exitVotesA++;
-            } else {
-                exitVotesB++;
-            }
+            votesA++;
+            numVotes++;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+
+    @Override
+    public void EPincrementB() {
+        lock.lock();
+        try {
+            votesB++;
+            numVotes++;
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    public int[] getExitVotes() {
-        lock.lock();
-        try {
-            return new int[]{exitVotesA, exitVotesB};
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Indica que a estação foi fechada e notifica que o exit poll deve encerrar suas operações.
-     */
-    @Override
-    public void stationIsClosed() {
+    public void EPclose() {
         lock.lock();
         try {
             isClosed = true;
-            System.out.println("Exit poll knows the station is closed");
         } finally {
             lock.unlock();
         }
     }
 
-    /**
-     * Método chamado quando o eleitor entra no exit poll.
-     * Se a estação estiver fechada, a thread é interrompida.
-     */
-    @Override
-    public void enterExitPoll(char vote) {
-        System.out.println("Voter entered exit poll");
-        if (isClosed) {
-            Thread.currentThread().interrupt();
-            return;
-        }
-        lock.lock();
-        try {
-            System.out.println("Voter entered exit poll");
-            this.exitVote = vote;
-            pollsterReady = true;
-            pollsterCondition.signalAll();
-            try {
-                // Aguarda o exit poll processar a resposta
-                voterCondition.await();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Simula a abordagem do exit poll ao eleitor.
-     * Dependendo das chances configuradas, incrementa o voto, simula mentira ou resposta verdadeira.
-     */
-    @Override
-    public void inquire() throws InterruptedException {
-        lock.lock();
-        try {
-            while (!pollsterReady) {
-                pollsterCondition.await();
-            }
-            if (rand.nextInt(100) < approached) { // 10% de chance de ser abordado
-                System.out.println("Voter was approached by the exit poll with vote " + this.exitVote);
-                incrementExit(exitVote == 'A' ? 0 : 1);
-                if (rand.nextInt(100) > noResponse) { // 60% de chance de não responder
-                    if (rand.nextInt(100) < lie) { // 20% de chance de mentir
-                        System.out.println("Voter lied about voting for party " + (exitVote == 'A' ? "B" : "A"));
-                    } else {
-                        System.out.println("Voter told the truth and voted for party " + exitVote);
-                    }
-                }
-                System.out.println("Voter has answered the exit poll");
-            }
-            pollsterReady = false;
-            voterCondition.signalAll();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw e;
-        } finally {
-            lock.unlock();
-        }
-    }
+    // ================= Métodos do VotesBooth =================
+    
 }

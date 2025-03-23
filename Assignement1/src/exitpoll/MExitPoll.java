@@ -3,7 +3,7 @@ package exitpoll;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import repository.IRepository_VotesBooth;
+import repository.IRepository_ExitPoll;
 import repository.MRepository;
 
 public class MExitPoll implements IExitPoll_all {
@@ -20,7 +20,7 @@ public class MExitPoll implements IExitPoll_all {
     private final Condition pollsterCondition = lock.newCondition();
     private final Condition voterCondition = lock.newCondition();
     private boolean pollsterReady = false;
-    private final IRepository_VotesBooth repository = MRepository.getInstance();
+    private final IRepository_ExitPoll repository = MRepository.getInstance();
 
     private final Random rand = new Random();
     private static boolean isClosed = false;
