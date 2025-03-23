@@ -16,16 +16,15 @@ public class VotingStationGUI implements VoterObserver {
     private static JPanel votingStationPanel;
     private static JPanel exitPanel;
     private static Map<Integer, JLabel> voterLabels = new HashMap<>();
+    private static int numVoters = Main.getNumVoters();
+    private static int capacityCap = Main.getCapacityCap(); 
+    private static List<TVoter> voters = Main.getVoters();
 
     public static void run() {
         SwingUtilities.invokeLater(VotingStationGUI::createAndShowGUI);
     }
 
     private static void createAndShowGUI() {
-        int numVoters = Main.getNumVoters();
-        int capacityCap = Main.getCapacityCap(); 
-        List<TVoter> voters = Main.getVoters();
-        
         frame = new JFrame("Voting Station");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 400);
@@ -36,7 +35,7 @@ public class VotingStationGUI implements VoterObserver {
         gbc.weighty = 1;
 
         // Entrada da Voting Station
-        entrancePanel = createPanel("Entrance", Color.LIGHT_GRAY, numVoters, voters);
+        entrancePanel = createPanel("Entrance", Color.WHITE, numVoters, voters);
         gbc.gridx = 0;
         gbc.weightx = 0.3;
         mainPanel.add(entrancePanel, gbc);
@@ -48,7 +47,7 @@ public class VotingStationGUI implements VoterObserver {
         mainPanel.add(votingStationPanel, gbc);
 
         // Saída da Voting Station
-        exitPanel = createExitPanel("Exit", Color.LIGHT_GRAY, 1, voters);
+        exitPanel = createExitPanel("Exit", Color.WHITE, 1, voters);
         gbc.gridx = 2;
         gbc.weightx = 0.3;
         mainPanel.add(exitPanel, gbc);
@@ -77,16 +76,7 @@ public class VotingStationGUI implements VoterObserver {
         panel.setBackground(color);
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK, 2), title));
         panel.setLayout(new GridLayout(maxVoters, 1, 5, 5));
-        /*
-        for (int i = 0; i < maxVoters; i++) {
-            JLabel voterLabel = new JLabel("Voter " + (i + 1), SwingConstants.CENTER);
-            voterLabel.setOpaque(true);
-            voterLabel.setBackground(color);
-            voterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            panel.add(voterLabel);
-            voterLabels.put(i + 1, voterLabel);
-        }
-        */
+
         return panel;
     }
 
@@ -96,15 +86,6 @@ public class VotingStationGUI implements VoterObserver {
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK, 2), title));
 
         JPanel votersPanel = new JPanel(new GridLayout(maxVoters, 1, 5, 5));
-        /*for (int i = 0; i < maxVoters; i++) {
-            JLabel voterLabel = new JLabel("Voter " + (i + 1), SwingConstants.CENTER);
-            voterLabel.setOpaque(true);
-            voterLabel.setBackground(color);
-            voterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            votersPanel.add(voterLabel);
-            voterLabels.put(i + 1, voterLabel);
-        }*/
-
         JPanel pollClerkPanel = new JPanel();
         pollClerkPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK, 2), "Poll Clerk"));
         JLabel clerkLabel = new JLabel("Validating Voter x", SwingConstants.CENTER);
@@ -134,15 +115,6 @@ public class VotingStationGUI implements VoterObserver {
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK, 2), title));
 
         JPanel votersPanel = new JPanel(new GridLayout(maxVoters, 1, 5, 5));
-        /*for (int i = 0; i < maxVoters; i++) {
-            JLabel voterLabel = new JLabel("Voter " + (i + 1), SwingConstants.CENTER);
-            voterLabel.setOpaque(true);
-            voterLabel.setBackground(color);
-            voterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            votersPanel.add(voterLabel);
-            voterLabels.put(i + 1, voterLabel);
-        }*/
-
         JPanel pollsterPanel = new JPanel();
         pollsterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK, 2), "Pollster"));
         pollsterPanel.setBackground(color);
@@ -161,6 +133,13 @@ public class VotingStationGUI implements VoterObserver {
     @Override
     public void updateVoterState(int voterId, String state) {
         SwingUtilities.invokeLater(() -> {
+            if(voterLabels.get(voterId) == null){
+                JLabel voterLabel = new JLabel("Voter " + voterId, SwingConstants.CENTER);
+                voterLabel.setOpaque(true);
+                voterLabel.setBackground(Color.LIGHT_GRAY);
+                voterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                voterLabels.put(voterId, voterLabel);
+            }
             JLabel voterLabel = voterLabels.get(voterId);
             if (voterLabel != null) {
                 switch (state) {
@@ -168,10 +147,17 @@ public class VotingStationGUI implements VoterObserver {
                         entrancePanel.add(voterLabel);
                         break;
                     case "Voting Station":
-                        votingStationPanel.add(voterLabel);
+                        JPanel VSvotersPanel = (JPanel) votingStationPanel.getComponent(0);
+                        VSvotersPanel.add(voterLabel);
                         break;
                     case "Exit":
-                        exitPanel.add(voterLabel);
+                        JPanel exitvotersPanel = (JPanel) exitPanel.getComponent(0);
+                        exitvotersPanel.add(voterLabel);
+                        break;
+                    case "Voting Booth":
+                        JPanel votingBoothPanel = (JPanel) votingStationPanel.getComponent(2);
+                        votingBoothPanel.removeAll();
+                        votingBoothPanel.add(voterLabel);
                         break;
                 }
                 entrancePanel.revalidate();
