@@ -24,8 +24,6 @@ public class TPollster extends Thread{
         } catch (InterruptedException e) { 
             System.out.println("Pollster interrupted");
         }
-        System.out.println("Pollster is done");
-
     }
 
     public static TPollster getInstance(IExitPoll_Pollster exitpoll) {

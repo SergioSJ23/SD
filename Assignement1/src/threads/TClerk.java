@@ -33,10 +33,8 @@ public class TClerk extends Thread{
         } catch (InterruptedException e) {
             while (station.lastVotes()){}
             exitPoll.stationIsClosed();
-            
             System.out.println("Clerk interrupted");
         }
-        System.out.println("Clerk is done");
     }
     
     public static TClerk getInstance() {

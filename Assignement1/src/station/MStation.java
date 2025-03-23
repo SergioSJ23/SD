@@ -52,7 +52,7 @@ public class MStation implements IStation_all {
     }
 
     @Override
-    public void enterStation(int id) {
+    public void enterStation(int id) throws InterruptedException {
         lock.lock();
         try {
             while (closen && !electionDayEnded) {
@@ -74,10 +74,10 @@ public class MStation implements IStation_all {
 
         try {
             queue.put(id);
-            System.out.println("Voter " + id + " entered the station.");
             repository.Senter(id);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt(); // Restore the interrupt status
+            throw e; // Re-throw the exception to propagate the interruption
         }
     }
 
@@ -88,7 +88,6 @@ public class MStation implements IStation_all {
 
         lock.lock();
         try {
-            System.out.println("Voter " + id + " has presented their ID.");
             repository.Spresent(id);
             clerkReady = true; // Notify that the clerk should proceed
             clerkCondition.signalAll();
@@ -111,16 +110,13 @@ public class MStation implements IStation_all {
             }
 
             int id = queue.peek();
-            System.out.println("Validating voter " + id);
             repository.Svalidate(id);
             Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
             if (idSet.contains(id)) {
-                System.out.println("Voter " + id + " rejected (duplicate ID).\n");
                 repository.Srejected(id);
                 this.isIdValid = false;  // Mark as invalid
             } else {
                 idSet.add(id);
-                System.out.println("Voter " + id + " validated and added to the list.");
                 repository.Svalidated(id);
                 this.isIdValid = true;  // Mark as valid
                 limitVotes -= 1;
@@ -142,16 +138,13 @@ public class MStation implements IStation_all {
             }
 
             int id = queue.peek();
-            System.out.println("Validating voter " + id);
             repository.Svalidate(id);
             Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
             if (idSet.contains(id)) {
-                System.out.println("Voter " + id + " rejected (duplicate ID).\n");
                 repository.Srejected(id);
                 this.isIdValid = false;  // Mark as invalid
             } else {
                 idSet.add(id);
-                System.out.println("Voter " + id + " validated and added to the list.");
                 repository.Svalidated(id);
                 this.isIdValid = true;  // Mark as valid
                 limitVotes -= 1;
@@ -175,7 +168,6 @@ public class MStation implements IStation_all {
         try {
 
             queue.remove(id);
-            System.out.println("Voter " + id + " left the station.");
             repository.Sleave(id);
             
         } catch (Exception e) {
@@ -185,16 +177,15 @@ public class MStation implements IStation_all {
 
     @Override
     public void close() {
-        closen = true;
-        repository.Sclose();
         lock.lock();
         try {
+            closen = true;
+            repository.Sclose();
             voterCondition.signalAll();
             clerkCondition.signalAll();
         } finally {
             lock.unlock();
         }
-        System.out.println("Station is closing. All waiting threads are notified.");
     }
 
     @Override

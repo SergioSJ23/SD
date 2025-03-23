@@ -76,7 +76,7 @@ public class MRepository implements IRepository_all {
 
         lock.lock();
         try {
-            System.out.println("Voter " + id + " voted for " + vote);
+            System.out.println("Voter " + id + " voted for party " + vote);
         } finally {
             lock.unlock();
         }
@@ -135,7 +135,7 @@ public class MRepository implements IRepository_all {
     public void EPenter(char vote, int id) {
         lock.lock();
         try {
-            System.out.println("Voter " + id + "entered EP " + vote);
+            System.out.println("Voter " + id + " entered Exit Poll " + vote);
         } finally {
             lock.unlock();
         }
@@ -155,7 +155,7 @@ public class MRepository implements IRepository_all {
     public void EPtruth(int id, char vote) {
         lock.lock();
         try {
-            System.out.println("Voter " + id + " told the truth: " + vote);
+            System.out.println("Voter " + id + " told the truth and voter for party " + vote);
         } finally {
             lock.unlock();
         }

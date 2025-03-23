@@ -52,7 +52,6 @@ public class MExitPoll implements IExitPoll_all {
         lock.lock();
         try {
             isClosed = true;
-            System.out.println("Exit poll knows the station is closed");
             repository.EPclose();
         } finally {
             lock.unlock();
@@ -68,7 +67,6 @@ public class MExitPoll implements IExitPoll_all {
         }
         lock.lock();
         try {
-            System.out.println("Voter entered exit poll");
             this.vote = vote;
             pollsterReady = true;
             pollsterCondition.signalAll();
@@ -89,20 +87,16 @@ public class MExitPoll implements IExitPoll_all {
             pollsterCondition.await();
         }
         if (rand.nextInt(100) < approached) { // 10% chance of being approached
-            System.out.println("Voter was approached by the exit poll with vote " + this.vote);
             repository.EPapproached(voterId);
             increment(vote == 'A' ? 0 : 1);
             if (rand.nextInt(100) > noResponse) { // 60% chance of not responding
                 if (rand.nextInt(100) < lie) { // 20% chance of lying
                     if (vote == 'A') {
-                        System.out.println("Voter " + voterId + " lied about voting for party B");
                         repository.EPlied(voterId , vote);
                     } else {
-                        System.out.println("Voter " + voterId + " lied about voting for party A");
                         repository.EPlied(voterId , vote);
                     }
                 } else {
-                    System.out.println("Voter " + voterId + " told the truth and voter for party " + vote);
                     repository.EPtruth(voterId , vote);
                 }
             }

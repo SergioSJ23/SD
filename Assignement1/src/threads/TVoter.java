@@ -40,19 +40,16 @@ public class TVoter extends Thread {
         try {
             while (true) {
                 reborn();
-                idList.add(this.id);
                 chooseVote();
-                notifyObserver("Entrance");
+                //notifyObserver("Entrance");
                 station.enterStation(this.id);
                 if (Thread.currentThread().isInterrupted()) {
-                    System.out.println("Voter " + this.id + " interrupted. Exiting...");
                     break;
                 }
                 if (station.present(this.id)) {
-                    notifyObserver("Voting Station");
+                    //notifyObserver("Voting Station");
                     votesBooth.vote(this.vote, this.id);
-                    notifyObserver("Voting Booth");
-                    System.out.println("Voter " + this.id + " voted for party " + this.vote);
+                    //notifyObserver("Voting Booth");
                 }
                 station.leaveStation(this.id);
                 notifyObserver("Exit");
@@ -75,20 +72,17 @@ public class TVoter extends Thread {
                 idList.add(newId);
                 this.id = newId;
             }
-            System.out.println("NEW Voter " + this.id + " created");
         } else {
             // Reutiliza um ID existente aleatório da lista
             synchronized (idList) {
                 if (!idList.isEmpty()) {
                     int randomIndex = ThreadLocalRandom.current().nextInt(idList.size());
                     this.id = idList.get(randomIndex);
-                    System.out.println("REUSED Voter " + this.id + " reborn");
                 } else {
                     // Caso a lista esteja vazia, gera um novo ID
                     int newId = ThreadLocalRandom.current().nextInt(1000, 10000);
                     idList.add(newId);
                     this.id = newId;
-                    System.out.println("NEW Voter " + this.id + " created (fallback)");
                 }
             }
         }

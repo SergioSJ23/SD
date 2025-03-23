@@ -30,25 +30,25 @@ public class Main {
 
             
             do{
-            try{
-            System.out.println("Enter the number of voters(min 3, max 10): ");
-            input = sc.nextLine();
-            numVoters = Integer.parseInt(input);
-            }catch(NumberFormatException e){
-                System.out.println("Invalid input");
-                
-            }
+                try
+                {
+                    System.out.println("Enter the number of voters(min 3, max 10): ");
+                    input = sc.nextLine();
+                    numVoters = Integer.parseInt(input);
+                } catch(NumberFormatException e){
+                    System.out.println("Invalid input");            
+                }
             }while(numVoters  < 3 || numVoters > 10);
 
             do{
-            try{
-            System.out.println("Enter the capacity cap(min 2, max 5): ");
-            input = sc.nextLine();
-            capacityCap = Integer.parseInt(input);
-            }catch(NumberFormatException e){
-                System.out.println("Invalid input");
-                
-            }
+                try
+                {
+                    System.out.println("Enter the capacity cap(min 2, max 5): ");
+                    input = sc.nextLine();
+                    capacityCap = Integer.parseInt(input);
+                } catch(NumberFormatException e){
+                    System.out.println("Invalid input");
+                }
             }while(capacityCap  < 2 || capacityCap > 5);
             
 
