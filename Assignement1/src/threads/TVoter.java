@@ -2,7 +2,6 @@ package threads;
 
 import exitpoll.IExitPoll_Voter;
 import gui.VoterObserver;
-import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import station.IStation_Voter;
 import votersId.IVoterId_Voter;
@@ -10,10 +9,8 @@ import votesbooth.IVotesBooth_Voter;
 
 public class TVoter extends Thread {
 
-    private final static ArrayList<Integer> idList = new ArrayList<>();
     private int id;
     private char vote;
-    private final int repeatVoter = 10;
     private final int partyOdds = 50;
     private final IStation_Voter station;
     private final IVotesBooth_Voter votesBooth;

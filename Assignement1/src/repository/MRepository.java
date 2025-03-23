@@ -58,7 +58,6 @@ public class MRepository implements IRepository_all {
         try {
             votesA++;
             numVotes++;
-            printState();
         } finally {
             lock.unlock();
         }
@@ -70,7 +69,6 @@ public class MRepository implements IRepository_all {
         try {
             votesB++;
             numVotes++;
-            printState();
         } finally {
             lock.unlock();
         }
@@ -129,7 +127,6 @@ public class MRepository implements IRepository_all {
         try {
             isClosed = true;
             System.out.println("Exit poll knows the station is closed");
-            printState();
         } finally {
             lock.unlock();
         }
@@ -207,7 +204,6 @@ public class MRepository implements IRepository_all {
         try {
             isClosed = false;
             System.out.println("Station is open");
-            printState();
         } finally {
             lock.unlock();
         }
@@ -229,7 +225,6 @@ public class MRepository implements IRepository_all {
         try {
             isClosed = true;
             System.out.println("Station is closed");
-            printState();
         } finally {
             lock.unlock();
         }
@@ -263,7 +258,6 @@ public class MRepository implements IRepository_all {
         lock.lock();
         try {
             System.out.println("Voter " + id + " left the station");
-            printState();
         } finally {
             lock.unlock();
         }
