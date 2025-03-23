@@ -10,11 +10,23 @@ import threads.*;
 import votesbooth.*;
 
 public class Main {
-    public static void main(String args[]) {
-        int numVoters;
-        int capacityCap;
-        List<TVoter> voters = new java.util.ArrayList<>();
+    private static int numVoters;
+    private static int capacityCap;
+    private static List<TVoter> voters = new java.util.ArrayList<>();
 
+    public static int getNumVoters(){
+        return numVoters;
+    } 
+
+    public static int getCapacityCap(){
+        return capacityCap;
+    }
+
+    public static List<TVoter> getVoters(){
+        return voters;
+    }
+
+    public static void main(String args[]) {
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("Enter the number of voters(min 3, max 10): ");
             String input = sc.nextLine();
@@ -82,5 +94,6 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        
     }
 }
