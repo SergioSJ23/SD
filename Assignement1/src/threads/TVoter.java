@@ -50,12 +50,12 @@ public class TVoter extends Thread {
                 }
                 if (station.present(this.id)) {
                     notifyObserver("Voting Station");
-                    votesBooth.vote(this.vote);
+                    votesBooth.vote(this.vote, this.id);
                     System.out.println("Voter " + this.id + " voted for party " + this.vote);
                 }
                 station.leaveStation(this.id);
                 notifyObserver("Exit");
-                exitPoll.enterExitPoll(this.vote);
+                exitPoll.enterExitPoll(this.vote, this.id);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -47,17 +47,6 @@ public class MExitPoll implements IExitPoll_all {
         }
     }
 
-    // Optional: Return both votes in one method
-    @Override
-    public int[] getVotes() {
-        lock.lock();
-        try {
-            return new int[]{votesA, votesB};
-        } finally {
-            lock.unlock();
-        }
-    }
-
     @Override
     public void stationIsClosed() {
         lock.lock();
@@ -72,7 +61,7 @@ public class MExitPoll implements IExitPoll_all {
 
 
     @Override
-    public void enterExitPoll(char vote){
+    public void enterExitPoll(char vote, int voterId) {
         if (isClosed){
             Thread.currentThread().interrupt();
             return;
@@ -84,6 +73,7 @@ public class MExitPoll implements IExitPoll_all {
             pollsterReady = true;
             pollsterCondition.signalAll();
             voterCondition.await(); // Wait until validation is complete
+            repository.EPenter(vote, voterId);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
@@ -100,19 +90,22 @@ public class MExitPoll implements IExitPoll_all {
         }
         if (rand.nextInt(100) < approached) { // 10% chance of being approached
             System.out.println("Voter was approached by the exit poll with vote " + this.vote);
+            repository.EPapproached(voterId);
             increment(vote == 'A' ? 0 : 1);
             if (rand.nextInt(100) > noResponse) { // 60% chance of not responding
                 if (rand.nextInt(100) < lie) { // 20% chance of lying
                     if (vote == 'A') {
                         System.out.println("Voter " + voterId + " lied about voting for party B");
+                        repository.EPlied(voterId , vote);
                     } else {
                         System.out.println("Voter " + voterId + " lied about voting for party A");
+                        repository.EPlied(voterId , vote);
                     }
                 } else {
                     System.out.println("Voter " + voterId + " told the truth and voter for party " + vote);
+                    repository.EPtruth(voterId , vote);
                 }
             }
-            System.out.println("Voter has answered the exit poll");
         }
 
         pollsterReady = false; // Reset pollster readiness for the next voter

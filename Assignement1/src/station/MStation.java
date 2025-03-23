@@ -52,32 +52,34 @@ public class MStation implements IStation_all {
     }
 
     @Override
-public void enterStation(int id) {
-    lock.lock();
-    try {
-        while (closen && !electionDayEnded) {
-            try {
-                statusCondition.await();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
+    public void enterStation(int id) {
+        lock.lock();
+        try {
+            while (closen && !electionDayEnded) {
+                try {
+                    repository.Swait(id);
+                    statusCondition.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
+        } finally {
+            lock.unlock();
         }
-    } finally {
-        lock.unlock();
-    }
-    if (electionDayEnded) {
-        Thread.currentThread().interrupt();
-        return;
-    }
+        if (electionDayEnded) {
+            Thread.currentThread().interrupt();
+            return;
+        }
 
-    try {
-        queue.put(id);
-        System.out.println("Voter " + id + " entered the station.");
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
+        try {
+            queue.put(id);
+            System.out.println("Voter " + id + " entered the station.");
+            repository.Senter(id);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
-}
 
     @Override
     public boolean present(int id) {
@@ -87,6 +89,7 @@ public void enterStation(int id) {
         lock.lock();
         try {
             System.out.println("Voter " + id + " has presented their ID.");
+            repository.Spresent(id);
             clerkReady = true; // Notify that the clerk should proceed
             clerkCondition.signalAll();
             voterCondition.await(); // Wait until validation is complete
@@ -109,13 +112,16 @@ public void enterStation(int id) {
 
             int id = queue.peek();
             System.out.println("Validating voter " + id);
+            repository.Svalidate(id);
             Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
             if (idSet.contains(id)) {
                 System.out.println("Voter " + id + " rejected (duplicate ID).\n");
+                repository.Srejected(id);
                 this.isIdValid = false;  // Mark as invalid
             } else {
                 idSet.add(id);
                 System.out.println("Voter " + id + " validated and added to the list.");
+                repository.Svalidated(id);
                 this.isIdValid = true;  // Mark as valid
                 limitVotes -= 1;
                 repository.SaddId(id);
@@ -137,13 +143,16 @@ public void enterStation(int id) {
 
             int id = queue.peek();
             System.out.println("Validating voter " + id);
+            repository.Svalidate(id);
             Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
             if (idSet.contains(id)) {
                 System.out.println("Voter " + id + " rejected (duplicate ID).\n");
+                repository.Srejected(id);
                 this.isIdValid = false;  // Mark as invalid
             } else {
                 idSet.add(id);
                 System.out.println("Voter " + id + " validated and added to the list.");
+                repository.Svalidated(id);
                 this.isIdValid = true;  // Mark as valid
                 limitVotes -= 1;
                 repository.SaddId(id);
@@ -164,11 +173,11 @@ public void enterStation(int id) {
     @Override
     public void leaveStation(int id) {
         try {
-            if (queue.remove(id)) {
-                System.out.println("Voter " + id + " left the station.");
-            } else {
-                System.out.println("Voter " + id + " not found in the queue.");
-            }
+
+            queue.remove(id);
+            System.out.println("Voter " + id + " left the station.");
+            repository.Sleave(id);
+            
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }

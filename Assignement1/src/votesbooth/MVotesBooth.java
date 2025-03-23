@@ -25,7 +25,7 @@ public class MVotesBooth implements IVotesBooth_all{
     }
 
     @Override
-    public void vote(char vote){
+    public void vote(char vote, int voterId) {
         lock.lock();
         try {
             try{
@@ -35,6 +35,8 @@ public class MVotesBooth implements IVotesBooth_all{
             }else{
                 incrementB();
             }
+            repository.VBvote(vote, voterId);
+
         } finally {
             lock.unlock();
         }
@@ -59,6 +61,7 @@ public class MVotesBooth implements IVotesBooth_all{
     public int[] getVotes() {
         lock.lock();
         try {
+            repository.VBgetVotes(votesA, votesB);
             return new int[]{votesA, votesB};
         } finally {
             lock.unlock();
