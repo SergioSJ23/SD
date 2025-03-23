@@ -9,13 +9,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MStation implements IStation_all {
 
-    private boolean status = false;
+    private boolean closen = true;
+    private static boolean electionDayEnded = false;
     private static int limitVotes = 50;
     private final ReentrantLock lock = new ReentrantLock();
     private final HashSet<Integer> idSet = new HashSet<>();
     private static MStation instance;
     private final Condition voterCondition = lock.newCondition();
     private final Condition clerkCondition = lock.newCondition();
+    private final Condition statusCondition = lock.newCondition();
+
     private final BlockingQueue<Integer> queue;
     private final Random rand = new Random();
 
@@ -34,17 +37,43 @@ public class MStation implements IStation_all {
     }
 
     @Override
-    public void enterStation(int id) {
-        if (status) {
-            Thread.currentThread().interrupt();
-        }
+    public void openStation() {
+        lock.lock(); // Acquire the lock
         try {
-            queue.put(id);
-            System.out.println("Voter " + id + " entered the station.");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            closen = false;
+            statusCondition.signalAll(); // Signal all waiting threads
+        } finally {
+            lock.unlock(); // Release the lock
         }
     }
+
+    @Override
+public void enterStation(int id) {
+    lock.lock();
+    try {
+        while (closen && !electionDayEnded) {
+            try {
+                statusCondition.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+    } finally {
+        lock.unlock();
+    }
+    if (electionDayEnded) {
+        Thread.currentThread().interrupt();
+        return;
+    }
+
+    try {
+        queue.put(id);
+        System.out.println("Voter " + id + " entered the station.");
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+}
 
     @Override
     public boolean isStationEmpty() {
@@ -114,7 +143,7 @@ public class MStation implements IStation_all {
 
     @Override
     public void close() {
-        status = true;
+        closen = true;
         lock.lock();
         try {
             voterCondition.signalAll();
@@ -127,11 +156,16 @@ public class MStation implements IStation_all {
 
     @Override
     public boolean getStatus() {
-        return this.status;
+        return this.closen;
     }
 
     @Override
     public boolean countVotes() {
         return limitVotes <= 0;
+    }
+
+    @Override
+    public void announceEnding(){
+        electionDayEnded = true;
     }
 }

@@ -17,11 +17,12 @@ public class TClerk extends Thread{
     @Override
     public void run() {
         try {
+            station.openStation();
             while (true) {
                 station.validateAndAdd();
                 limitReached = station.countVotes();
                 if (limitReached){
-                    System.out.println("limit");
+                    station.announceEnding();
                     station.close();
                 }
             }

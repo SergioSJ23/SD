@@ -7,4 +7,6 @@ public interface IStation_Clerk {
     void validateAndAdd() throws InterruptedException; //Clerk
     boolean isStationEmpty(); //Clerk
     boolean countVotes();
+    void openStation();
+    void announceEnding();
 }
