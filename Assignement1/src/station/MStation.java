@@ -76,11 +76,6 @@ public void enterStation(int id) {
 }
 
     @Override
-    public boolean isStationEmpty() {
-        return queue.isEmpty();
-    }
-
-    @Override
     public boolean present(int id) {
         while (id != queue.peek()) {
         }
@@ -184,11 +179,6 @@ public void enterStation(int id) {
             lock.unlock();
         }
         System.out.println("Station is closing. All waiting threads are notified.");
-    }
-
-    @Override
-    public boolean getStatus() {
-        return this.closen;
     }
 
     @Override

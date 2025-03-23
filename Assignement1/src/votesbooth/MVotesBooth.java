@@ -30,35 +30,39 @@ public class MVotesBooth implements IVotesBooth_all{
     @Override
     public void vote(char vote){
         lock.lock();
-        try{
-
-            repository.vote(vote);
-
+        
+        try {
+            try{
+            Thread.sleep(rand.nextInt(16));
+            if(vote == 'A'){
+                incrementA();
+            }else{
+                incrementB();
+            }
         } finally {
             lock.unlock();
         }
+        }catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    
 
+    private void incrementA() {
+        votesA++;
+        numVotes++;
+    }
+
+    private void incrementB() {
+        votesB++;
+        numVotes++;
     }
     
     @Override
     public int[] getVotes() {
         lock.lock();
         try {
-
-             return repository.getVotes();
-
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    @Override
-    public int getNumVotes() {
-        lock.lock();
-        try {
-
-            return repository.getNumVotes();
-
+            return new int[]{votesA, votesB};
         } finally {
             lock.unlock();
         }

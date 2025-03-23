@@ -54,16 +54,6 @@ public class MRepository implements IRepository_all {
     }
 
     @Override
-    public int getNumVotes() {
-        lock.lock();
-        try {
-            return numVotes;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    @Override
     public void vote(char vote) {
         lock.lock();
         try {
@@ -109,26 +99,6 @@ public class MRepository implements IRepository_all {
             } else {
                 exitVotesB++;
             }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    @Override
-    public int getVotesAExit() {
-        lock.lock();
-        try {
-            return exitVotesA;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    @Override
-    public int getVotesBExit() {
-        lock.lock();
-        try {
-            return exitVotesB;
         } finally {
             lock.unlock();
         }
@@ -214,28 +184,6 @@ public class MRepository implements IRepository_all {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw e;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Método opcional para questionar o eleitor fora do fluxo principal de inquiry.
-     */
-    @Override
-    public void question() throws InterruptedException {
-        lock.lock();
-        try {
-            willAnswer.await();
-            incrementExit(exitVote == 'A' ? 0 : 1);
-            if (rand.nextInt(100) > noResponse) {
-                if (rand.nextInt(100) < lie) {
-                    System.out.println("Voter lied about voting for party " + (exitVote == 'A' ? "B" : "A"));
-                } else {
-                    System.out.println("Voter told the truth and voted for party " + exitVote);
-                }
-            }
-            hasAnswered.signalAll();
         } finally {
             lock.unlock();
         }
