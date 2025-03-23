@@ -140,6 +140,7 @@ public class VotingStationGUI implements VoterObserver {
                 voterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 voterLabels.put(voterId, voterLabel);
             }
+
             JLabel voterLabel = voterLabels.get(voterId);
             if (voterLabel != null) {
                 // Remove voterLabel from all panels
@@ -150,6 +151,10 @@ public class VotingStationGUI implements VoterObserver {
                 exitvotersPanel.remove(voterLabel);
                 JPanel votingBoothPanel = (JPanel) votingStationPanel.getComponent(2);
                 votingBoothPanel.remove(voterLabel);
+                JPanel pollsterPanel = (JPanel) exitPanel.getComponent(1);
+                pollsterPanel.remove(voterLabel);
+                JPanel clerkPanel = (JPanel) votingStationPanel.getComponent(1);
+                clerkPanel.remove(voterLabel);
 
                 // Add voterLabel to the new state panel
                 switch (state) {
@@ -163,8 +168,13 @@ public class VotingStationGUI implements VoterObserver {
                         exitvotersPanel.add(voterLabel);
                         break;
                     case "Voting Booth":
-                        votingBoothPanel.removeAll();
                         votingBoothPanel.add(voterLabel);
+                        break;
+                    case "Pollster":
+                        pollsterPanel.add(voterLabel);
+                        break;
+                    case "Clerk":
+                        clerkPanel.add(voterLabel);
                         break;
                 }
                 entrancePanel.revalidate();
