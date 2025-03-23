@@ -50,7 +50,7 @@ public class TVoter extends Thread {
                 }
                 if (station.present(this.id)) {
                     notifyObserver("Voting Station");
-                    votesBooth.vote(this.vote);
+                    votesBooth.vote(this.vote, this.id);
                     notifyObserver("Voting Booth");
                     System.out.println("Voter " + this.id + " voted for party " + this.vote);
                 }

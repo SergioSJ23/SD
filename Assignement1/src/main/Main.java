@@ -1,8 +1,6 @@
 package main;
 
 import exitpoll.*;
-import gui.VoterObserver;
-import gui.VotingStationGUI;
 import java.util.List;
 import java.util.Scanner;
 import station.*;
@@ -53,8 +51,7 @@ public class Main {
         Thread tpollster;
         Thread tclerk;
         
-        // Register the observer
-        VoterObserver observer = new VotingStationGUI();
+        
         
         // Instantiate the variables with the correct values
         station = MStation.getInstance(capacityCap);
@@ -73,7 +70,7 @@ public class Main {
 
         for (int i = 0; i < numVoters; i++) {
             TVoter voter = new TVoter((IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll);
-            voter.registerObserver(observer);
+            
             voter.start();
             voters.add(voter); // Adiciona a thread à lista
         }
