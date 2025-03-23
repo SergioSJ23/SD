@@ -6,7 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import repository.IRepository_VotesBooth;
+import repository.IRepository_Station;
 import repository.MRepository;
 
 public class MStation implements IStation_all {
@@ -20,7 +20,7 @@ public class MStation implements IStation_all {
     private final Condition voterCondition = lock.newCondition();
     private final Condition clerkCondition = lock.newCondition();
     private final Condition statusCondition = lock.newCondition();
-    private final IRepository_VotesBooth repository = MRepository.getInstance();
+    private final IRepository_Station repository = MRepository.getInstance();
 
     private final BlockingQueue<Integer> queue;
     private final Random rand = new Random();
