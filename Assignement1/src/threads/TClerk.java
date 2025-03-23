@@ -27,10 +27,12 @@ public class TClerk extends Thread{
                 if (limitReached){
                     station.announceEnding();
                     station.close();
-                    exitPoll.stationIsClosed();
+                    Thread.currentThread().interrupt(); // Restore the interrupt status
                 }
             }
-        } catch (InterruptedException e) { 
+        } catch (InterruptedException e) {
+            while (station.lastVotes()){}
+            exitPoll.stationIsClosed();
             System.out.println("Clerk interrupted");
         }
         System.out.println("Clerk is done");

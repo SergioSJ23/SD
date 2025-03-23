@@ -82,7 +82,6 @@ public void enterStation(int id) {
 
     @Override
     public boolean present(int id) {
-        System.out.println(queue);
         while (id != queue.peek()) {
         }
 
@@ -126,6 +125,39 @@ public void enterStation(int id) {
         } finally {
             lock.unlock();
         }
+    }
+
+    @Override
+    public boolean lastVotes() {
+        lock.lock();
+        try {
+            while (!clerkReady) {
+                clerkCondition.await();
+            }
+
+            int id = queue.peek();
+            System.out.println("Validating voter " + id);
+            Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
+            if (idSet.contains(id)) {
+                System.out.println("Voter " + id + " rejected (duplicate ID).\n");
+                this.isIdValid = false;  // Mark as invalid
+            } else {
+                idSet.add(id);
+                System.out.println("Voter " + id + " validated and added to the list.");
+                this.isIdValid = true;  // Mark as valid
+                limitVotes -= 1;
+            }
+            if (queue.size() <= 0) {
+                return false;
+            }
+            clerkReady = false; // Reset clerk readiness for the next voter
+            voterCondition.signalAll(); // Notify the voter to continue
+            return true;
+        } catch (InterruptedException e) {
+        } finally {
+            lock.unlock();
+        }
+        return false;
     }
 
     @Override
