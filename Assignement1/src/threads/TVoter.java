@@ -11,17 +11,15 @@ public class TVoter extends Thread {
 
     private final static ArrayList<Integer> idList = new ArrayList<>();
     private int id;
-    private char voteVoter;
+    private char vote;
     private final int repeatVoter = 10;
     private final int partyOdds = 50;
     private final IStation_Voter station;
     private final IVotesBooth_Voter votesBooth;
     private final IExitPoll_Voter exitPoll;
-    private boolean valid;
     private VoterObserver observer;
 
-    public TVoter (int i, IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll){
-        this.id = i;
+    public TVoter (IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll){
         this.station = station;
         this.votesBooth = votesBooth;
         this.exitPoll = exitPoll;
@@ -32,32 +30,33 @@ public class TVoter extends Thread {
     }
 
     private void notifyObserver(String state) {
-        if (observer != null) {
-            observer.updateVoterState(id, state);
+        if (this.observer != null) {
+            observer.updateVoterState(this.id, state);
         }
     }
 
     @Override
     public void run() {
         try {
-            while (votesBooth.isVotingComplete()) {
+            while (true) {
+                reborn();
                 idList.add(this.id);
                 chooseVote();
                 notifyObserver("Entrance");
                 station.enterStation(this.id);
-                this.valid = station.present(this.id);
-                if (this.valid) {
+                if (Thread.currentThread().isInterrupted()) {
+                    System.out.println("Voter " + this.id + " interrupted. Exiting...");
+                    break;
+                }
+                if (station.present(this.id)) {
                     notifyObserver("Voting Station");
-                    votesBooth.vote(this.voteVoter);
-                    System.out.println("Voter " + this.id + " voted for party " + this.voteVoter);
+                    votesBooth.vote(this.vote);
+                    System.out.println("Voter " + this.id + " voted for party " + this.vote);
                 }
                 station.leaveStation(this.id);
                 notifyObserver("Exit");
-                exitPoll.inquire(this.id, this.voteVoter);
-                if (votesBooth.isVotingComplete())
-                    reborn();
+                exitPoll.enterExitPoll(this.vote);
             }
-            station.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,9 +95,9 @@ public class TVoter extends Thread {
 
     private void chooseVote(){
         if (ThreadLocalRandom.current().nextInt(0, 100) >= this.partyOdds) {
-            this.voteVoter = 'A';
+            this.vote = 'A';
         } else {
-            this.voteVoter = 'B';
+            this.vote = 'B';
         }
     }
 }

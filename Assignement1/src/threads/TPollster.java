@@ -19,7 +19,7 @@ public class TPollster extends Thread{
     public void run() {
         try {
             while (true) {
-                exitPoll.answer();
+                exitPoll.inquire();
             }
         } catch (InterruptedException e) { 
             System.out.println("Pollster interrupted");
