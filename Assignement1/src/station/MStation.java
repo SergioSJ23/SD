@@ -6,6 +6,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import repository.IRepository_VotesBooth;
+import repository.MRepository;
 
 public class MStation implements IStation_all {
 
@@ -18,6 +20,7 @@ public class MStation implements IStation_all {
     private final Condition voterCondition = lock.newCondition();
     private final Condition clerkCondition = lock.newCondition();
     private final Condition statusCondition = lock.newCondition();
+    private final IRepository_VotesBooth repository = MRepository.getInstance();
 
     private final BlockingQueue<Integer> queue;
     private final Random rand = new Random();
@@ -41,6 +44,7 @@ public class MStation implements IStation_all {
         lock.lock(); // Acquire the lock
         try {
             closen = false;
+            repository.Sopen();
             statusCondition.signalAll(); // Signal all waiting threads
         } finally {
             lock.unlock(); // Release the lock
@@ -114,6 +118,7 @@ public void enterStation(int id) {
                 System.out.println("Voter " + id + " validated and added to the list.");
                 this.isIdValid = true;  // Mark as valid
                 limitVotes -= 1;
+                repository.SaddId(id);
             }
             clerkReady = false; // Reset clerk readiness for the next voter
             voterCondition.signalAll(); // Notify the voter to continue
@@ -141,6 +146,7 @@ public void enterStation(int id) {
                 System.out.println("Voter " + id + " validated and added to the list.");
                 this.isIdValid = true;  // Mark as valid
                 limitVotes -= 1;
+                repository.SaddId(id);
             }
             if (queue.size() <= 0) {
                 return false;
@@ -171,6 +177,7 @@ public void enterStation(int id) {
     @Override
     public void close() {
         closen = true;
+        repository.Sclose();
         lock.lock();
         try {
             voterCondition.signalAll();
@@ -189,5 +196,6 @@ public void enterStation(int id) {
     @Override
     public void announceEnding(){
         electionDayEnded = true;
+        repository.SannounceEnding();
     }
 }
