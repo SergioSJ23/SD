@@ -31,7 +31,7 @@ public class MVotersId implements IVotersId_all {
         int newId;
         synchronized (idList) {
             do {
-                newId = ThreadLocalRandom.current().nextInt(1000, 10000); // IDs de 4 dígitos
+                newId = ThreadLocalRandom.current().nextInt(0, 1000); // IDs de 4 dígitos
             } while (idList.contains(newId)); // Garante que o ID seja único
             idList.add(newId);
             return newId;

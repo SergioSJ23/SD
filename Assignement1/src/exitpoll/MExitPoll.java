@@ -69,9 +69,9 @@ public class MExitPoll implements IExitPoll_all {
             this.vote = vote;
             this.voterId = voterId;
             pollsterReady = true;
+            repository.EPenter(vote, voterId);
             pollsterCondition.signalAll();
             voterCondition.await(); // Wait until validation is complete
-            repository.EPenter(vote, voterId);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {

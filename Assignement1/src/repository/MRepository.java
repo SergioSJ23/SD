@@ -333,11 +333,11 @@ private void printHead() {
     // Print headers (states) with fixed width
     StringBuilder header = new StringBuilder();
     for (String state : possibleStates) {
-        header.append(String.format("%-15s", state)); // Fixed width of 15 characters for each column
+        header.append(String.format("%-20s | ", state)); // Fixed width of 15 characters for each column
     }
     log.writelnString("=== Voting System Log ===");
     log.writelnString(header.toString());
-    log.writelnString("-------------------------------------------------------------------------------");
+    log.writelnString("------------------------------------------------------------------");
 
     if (!log.close()) {
         GenericIO.writelnString("While trying to close the file " + logFileName + " the process failed.");
@@ -376,7 +376,7 @@ private void printState() {
     StringBuilder stateLine = new StringBuilder();
     for (int i = 0; i < possibleStates.length; i++) {
         String voters = stateToVoters.get(i).toString();
-        stateLine.append(String.format("%-15s", voters)); // Fixed width of 15 characters for each column
+        stateLine.append(String.format("%-20s | ", voters)); // Fixed width of 15 characters for each column
     }
 
     // Write the row to the log file
