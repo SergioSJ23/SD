@@ -1,5 +1,6 @@
 package repository;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,10 +28,14 @@ public class MRepository implements IRepository_all {
     // Variáveis de controle do ExitPoll
     private boolean pollsterReady = false;
     private boolean isClosed = false;
+    private boolean votingDayEnded = false;
     private final Condition pollsterCondition = lock.newCondition();
     private final Condition voterCondition = lock.newCondition();
     private final Condition willAnswer = lock.newCondition();
     private final Condition hasAnswered = lock.newCondition();
+    
+    // Variáveis de controle do VotesBooth
+    private ArrayList<Integer> idList = new ArrayList<>();
 
     private MRepository() { }
 
@@ -93,4 +98,45 @@ public class MRepository implements IRepository_all {
 
     // ================= Métodos do VotesBooth =================
     
+    @Override
+    public void Sopen() {
+        lock.lock();
+        try {
+            isClosed = false;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void SaddId(int id) {
+        lock.lock();
+        try {
+            
+            idList.add(id);
+
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void Sclose() {
+        lock.lock();
+        try {
+            isClosed = true;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void SannounceEnding() {
+        lock.lock();
+        try {
+            votingDayEnded = true;
+        } finally {
+            lock.unlock();
+        }
+    }
 }
