@@ -5,6 +5,7 @@ import gui.VoterObserver;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import station.IStation_Voter;
+import votersId.IVoterId_Voter;
 import votesbooth.IVotesBooth_Voter;
 
 public class TVoter extends Thread {
@@ -17,12 +18,16 @@ public class TVoter extends Thread {
     private final IStation_Voter station;
     private final IVotesBooth_Voter votesBooth;
     private final IExitPoll_Voter exitPoll;
+    private final IVoterId_Voter voterId;
     private VoterObserver observer;
 
-    public TVoter (IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll){
+
+    public TVoter (IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll, IVoterId_Voter voterId) {
         this.station = station;
         this.votesBooth = votesBooth;
         this.exitPoll = exitPoll;
+        this.voterId = voterId;
+        
     }
 
     public void registerObserver(VoterObserver observer) {
@@ -39,7 +44,7 @@ public class TVoter extends Thread {
     public void run() {
         try {
             while (true) {
-                reborn();
+                id = voterId.reborn();
                 chooseVote();
                 //notifyObserver("Entrance");
                 station.enterStation(this.id);
@@ -61,32 +66,7 @@ public class TVoter extends Thread {
         System.out.println("Voter " + this.id + " is done");
     }
 
-    private void reborn() {
-        if (ThreadLocalRandom.current().nextInt(0, 100) >= this.repeatVoter) {
-            // Gera um novo ID aleatório e adiciona à lista
-            int newId;
-            synchronized (idList) {
-                do {
-                    newId = ThreadLocalRandom.current().nextInt(1000, 10000); // IDs de 4 dígitos
-                } while (idList.contains(newId)); // Garante que o ID seja único
-                idList.add(newId);
-                this.id = newId;
-            }
-        } else {
-            // Reutiliza um ID existente aleatório da lista
-            synchronized (idList) {
-                if (!idList.isEmpty()) {
-                    int randomIndex = ThreadLocalRandom.current().nextInt(idList.size());
-                    this.id = idList.get(randomIndex);
-                } else {
-                    // Caso a lista esteja vazia, gera um novo ID
-                    int newId = ThreadLocalRandom.current().nextInt(1000, 10000);
-                    idList.add(newId);
-                    this.id = newId;
-                }
-            }
-        }
-    }
+
 
     private void chooseVote(){
         if (ThreadLocalRandom.current().nextInt(0, 100) >= this.partyOdds) {
