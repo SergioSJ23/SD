@@ -7,9 +7,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import repository.IRepository_Station;
-
-import gui.VoterObserver;
-import repository.IRepository_VotesBooth;
 import repository.MRepository;
 
 public class MStation implements IStation_all {
