@@ -3,6 +3,8 @@ package exitpoll;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import repository.IRepository_VotesBooth;
+import repository.MRepository;
 
 public class MExitPoll implements IExitPoll_all {
 
@@ -15,11 +17,10 @@ public class MExitPoll implements IExitPoll_all {
     private final int approached = 10;
     private final ReentrantLock lock = new ReentrantLock();
     private static IExitPoll_all instance;
-    private final java.util.concurrent.locks.Condition willAnswer = lock.newCondition();
-    private final java.util.concurrent.locks.Condition hasAnswered = lock.newCondition();
     private final Condition pollsterCondition = lock.newCondition();
     private final Condition voterCondition = lock.newCondition();
     private boolean pollsterReady = false;
+    private final IRepository_VotesBooth repository = MRepository.getInstance();
 
     private final Random rand = new Random();
     private static boolean isClosed = false;
@@ -36,8 +37,10 @@ public class MExitPoll implements IExitPoll_all {
         try {
             if (voteId == 0) {
                 votesA++;
+                repository.EPincrementA();
             } else {
                 votesB++;
+                repository.EPincrementB();
             }
         } finally {
             lock.unlock();
@@ -61,6 +64,7 @@ public class MExitPoll implements IExitPoll_all {
         try {
             isClosed = true;
             System.out.println("Exit poll knows the station is closed");
+            repository.EPclose();
         } finally {
             lock.unlock();
         }

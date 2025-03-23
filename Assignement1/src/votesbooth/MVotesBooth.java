@@ -10,12 +10,9 @@ public class MVotesBooth implements IVotesBooth_all{
     private static int numVotes = 0;
     private static int votesA = 0;
     private static int votesB = 0;
-    private static final int votingLimit = 50;
     private static IVotesBooth_all instance;
     private final ReentrantLock lock = new ReentrantLock();
     private final IRepository_VotesBooth repository = MRepository.getInstance();
-
-    
         
     private final Random rand = new Random();
 
@@ -30,7 +27,6 @@ public class MVotesBooth implements IVotesBooth_all{
     @Override
     public void vote(char vote){
         lock.lock();
-        
         try {
             try{
             Thread.sleep(rand.nextInt(16));
@@ -47,15 +43,16 @@ public class MVotesBooth implements IVotesBooth_all{
         }
     }
     
-
     private void incrementA() {
         votesA++;
         numVotes++;
+        repository.VBincrementA();
     }
 
     private void incrementB() {
         votesB++;
         numVotes++;
+        repository.VBincrementB();
     }
     
     @Override

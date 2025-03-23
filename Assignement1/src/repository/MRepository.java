@@ -43,36 +43,6 @@ public class MRepository implements IRepository_all {
 
     // ================= Métodos do VotesBooth =================
 
-    @Override
-    public int[] getVotes() {
-        lock.lock();
-        try {
-            return new int[]{votesA, votesB};
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    @Override
-    public void vote(char vote) {
-        lock.lock();
-        try {
-            // Simulação de tempo de processamento
-            try {
-                Thread.sleep(rand.nextInt(16));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            if (vote == 'A') {
-                incrementA();
-            } else {
-                incrementB();
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
     private void incrementA() {
         votesA++;
         numVotes++;
