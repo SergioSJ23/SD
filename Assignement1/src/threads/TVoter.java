@@ -59,6 +59,7 @@ public class TVoter extends Thread {
                 station.leaveStation(this.id);
                 notifyObserver("Exit");
                 exitPoll.enterExitPoll(this.vote, this.id);
+                exitPoll.leaveExitPoll(this.id);
             }
         } catch (Exception e) {
             e.printStackTrace();

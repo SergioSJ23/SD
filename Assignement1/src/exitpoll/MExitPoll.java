@@ -68,12 +68,23 @@ public class MExitPoll implements IExitPoll_all {
         lock.lock();
         try {
             this.vote = vote;
+            this.voterId = voterId;
             pollsterReady = true;
             pollsterCondition.signalAll();
             voterCondition.await(); // Wait until validation is complete
             repository.EPenter(vote, voterId);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void leaveExitPoll(int voterId) {
+        lock.lock();
+        try {
+            repository.EPleave(voterId);
         } finally {
             lock.unlock();
         }
