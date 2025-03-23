@@ -52,7 +52,10 @@ public class Main {
         //threads
         Thread tpollster;
         Thread tclerk;
-
+        
+        // Register the observer
+        VoterObserver observer = new VotingStationGUI();
+        
         // Instantiate the variables with the correct values
         station = MStation.getInstance(capacityCap);
         exitPoll = MExitPoll.getInstance();
@@ -65,8 +68,9 @@ public class Main {
         tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll));
         tpollster.start();
 
-        // Register the observer
-        VoterObserver observer = new VotingStationGUI();
+        // Start the GUI
+        //VotingStationGUI.run();
+
         for (int i = 0; i < numVoters; i++) {
             TVoter voter = new TVoter((IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll);
             voter.registerObserver(observer);

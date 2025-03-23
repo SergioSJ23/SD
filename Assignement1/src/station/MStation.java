@@ -6,6 +6,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import gui.VoterObserver;
 import repository.IRepository_VotesBooth;
 import repository.MRepository;
 
@@ -52,32 +54,32 @@ public class MStation implements IStation_all {
     }
 
     @Override
-public void enterStation(int id) {
-    lock.lock();
-    try {
-        while (closen && !electionDayEnded) {
-            try {
-                statusCondition.await();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
+    public void enterStation(int id) {
+        lock.lock();
+        try {
+            while (closen && !electionDayEnded) {
+                try {
+                    statusCondition.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
+        } finally {
+            lock.unlock();
         }
-    } finally {
-        lock.unlock();
-    }
-    if (electionDayEnded) {
-        Thread.currentThread().interrupt();
-        return;
-    }
+        if (electionDayEnded) {
+            Thread.currentThread().interrupt();
+            return;
+        }
 
-    try {
-        queue.put(id);
-        System.out.println("Voter " + id + " entered the station.");
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
+        try {
+            queue.put(id);
+            System.out.println("Voter " + id + " entered the station.");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
-}
 
     @Override
     public boolean present(int id) {
