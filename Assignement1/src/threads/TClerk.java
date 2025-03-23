@@ -1,5 +1,7 @@
 package threads;
 
+import exitpoll.IExitPoll_Clerk;
+import exitpoll.MExitPoll;
 import station.IStation_Clerk;
 import station.MStation;
 
@@ -8,6 +10,7 @@ public class TClerk extends Thread{
     private static TClerk instance;
     private boolean limitReached;
     IStation_Clerk station = MStation.getInstance(100);
+    IExitPoll_Clerk exitPoll = MExitPoll.getInstance();
     
     
     private TClerk() {
@@ -23,6 +26,7 @@ public class TClerk extends Thread{
                 if (limitReached){
                     System.out.println("limit");
                     station.close();
+                    exitPoll.stationIsClosed();
                 }
             }
         } catch (InterruptedException e) { 
