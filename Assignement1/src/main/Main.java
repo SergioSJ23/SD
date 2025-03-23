@@ -8,8 +8,8 @@ import threads.*;
 import votesbooth.*;
 
 public class Main {
-    private static int numVoters;
-    private static int capacityCap;
+    private static int numVoters = 0;
+    private static int capacityCap = 0;
     private static List<TVoter> voters = new java.util.ArrayList<>();
 
     public static int getNumVoters(){
@@ -26,20 +26,32 @@ public class Main {
 
     public static void main(String args[]) {
         try (Scanner sc = new Scanner(System.in)) {
+            String input;
+
+            
+            do{
+            try{
             System.out.println("Enter the number of voters(min 3, max 10): ");
-            String input = sc.nextLine();
-            if(input.isEmpty()){
-                numVoters = 5;
-            }else{
-                numVoters = Integer.parseInt(input);
-            }
-            System.out.println("What is the capacity of the station for voters: ");
             input = sc.nextLine();
-            if(input.isEmpty()){
-                capacityCap = 3;
-            }else{
-                capacityCap = Integer.parseInt(input);
+            numVoters = Integer.parseInt(input);
+            }catch(NumberFormatException e){
+                System.out.println("Invalid input");
+                
             }
+            }while(numVoters  < 3 || numVoters > 10);
+
+            do{
+            try{
+            System.out.println("Enter the capacity cap(min 2, max 5): ");
+            input = sc.nextLine();
+            capacityCap = Integer.parseInt(input);
+            }catch(NumberFormatException e){
+                System.out.println("Invalid input");
+                
+            }
+            }while(capacityCap  < 2 || capacityCap > 5);
+            
+
         }
 
         //monitors
@@ -79,7 +91,6 @@ public class Main {
         for (TVoter voter : voters) {
             try {
                 voter.join(); // Espera a thread terminar
-                System.out.println("Voter " + voter.getId() + " is DOOOOOOONNEEEE");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
