@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.SwingUtilities;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -134,7 +133,7 @@ public class VotingStationGUI implements VoterObserver {
     @Override
     public void updateVoterState(int voterId, String state) {
         SwingUtilities.invokeLater(() -> {
-            if(voterLabels.get(voterId) == null){
+            if (voterLabels.get(voterId) == null) {
                 JLabel voterLabel = new JLabel("Voter " + voterId, SwingConstants.CENTER);
                 voterLabel.setOpaque(true);
                 voterLabel.setBackground(Color.LIGHT_GRAY);
@@ -143,20 +142,27 @@ public class VotingStationGUI implements VoterObserver {
             }
             JLabel voterLabel = voterLabels.get(voterId);
             if (voterLabel != null) {
+                // Remove voterLabel from all panels
+                entrancePanel.remove(voterLabel);
+                JPanel VSvotersPanel = (JPanel) votingStationPanel.getComponent(0);
+                VSvotersPanel.remove(voterLabel);
+                JPanel exitvotersPanel = (JPanel) exitPanel.getComponent(0);
+                exitvotersPanel.remove(voterLabel);
+                JPanel votingBoothPanel = (JPanel) votingStationPanel.getComponent(2);
+                votingBoothPanel.remove(voterLabel);
+
+                // Add voterLabel to the new state panel
                 switch (state) {
                     case "Entrance":
                         entrancePanel.add(voterLabel);
                         break;
                     case "Voting Station":
-                        JPanel VSvotersPanel = (JPanel) votingStationPanel.getComponent(0);
                         VSvotersPanel.add(voterLabel);
                         break;
                     case "Exit":
-                        JPanel exitvotersPanel = (JPanel) exitPanel.getComponent(0);
                         exitvotersPanel.add(voterLabel);
                         break;
                     case "Voting Booth":
-                        JPanel votingBoothPanel = (JPanel) votingStationPanel.getComponent(2);
                         votingBoothPanel.removeAll();
                         votingBoothPanel.add(voterLabel);
                         break;
