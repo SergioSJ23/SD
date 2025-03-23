@@ -85,6 +85,9 @@ public class MExitPoll implements IExitPoll_all{
 
     @Override
     public void inquire(int id, char voteVoter) {
+        if (isClosed){
+            Thread.currentThread().interrupt();
+        }
         lock.lock();
         if(rand.nextInt(100) < approached){ // 10% chance of being approached
             try {
