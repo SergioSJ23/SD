@@ -57,7 +57,6 @@ public class MStation implements IStation_all {
         try {
             while (closen && !electionDayEnded) {
                 try {
-                    repository.Swait(id);
                     statusCondition.await();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
