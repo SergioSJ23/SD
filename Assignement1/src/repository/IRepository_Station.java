@@ -10,7 +10,6 @@ public interface IRepository_Station {
     void Sleave(int id);
     void Swait(int id);
     void Spresent(int id);
-    void Svalidate(int id);
     void Srejected(int id);
     void Svalidated(int id);
     

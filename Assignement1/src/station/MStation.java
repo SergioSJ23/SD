@@ -110,7 +110,6 @@ public class MStation implements IStation_all {
             }
 
             int id = queue.peek();
-            repository.Svalidate(id);
             Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
             if (idSet.contains(id)) {
                 repository.Srejected(id);
@@ -138,7 +137,6 @@ public class MStation implements IStation_all {
             }
 
             int id = queue.peek();
-            repository.Svalidate(id);
             Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
             if (idSet.contains(id)) {
                 repository.Srejected(id);

@@ -62,8 +62,7 @@ public class MExitPoll implements IExitPoll_all {
     @Override
     public void enterExitPoll(char vote, int voterId) {
         if (isClosed){
-            Thread.currentThread().interrupt();
-            return;
+            leaveExitPoll(voterId);
         }
         lock.lock();
         try {
@@ -82,12 +81,11 @@ public class MExitPoll implements IExitPoll_all {
 
     @Override
     public void leaveExitPoll(int voterId) {
-        lock.lock();
-        try {
-            repository.EPleave(voterId);
-        } finally {
-            lock.unlock();
+        if (isClosed){
+            Thread.currentThread().interrupt();
+            return;
         }
+        repository.EPleave(voterId);
     }
 
     @Override
