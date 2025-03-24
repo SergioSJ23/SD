@@ -50,7 +50,7 @@ public class MRepository implements IRepository_all {
     // Estados possíveis dos eleitores
     private final String[] possibleStates = {
         "Station", "Presenting", "Validated", "Rejected",
-        "Voted", "Exit Poll", "Approached", "Truth", "Lied", "Left Pollster"
+        "Voted", "Exit Poll", "Approached", "Truth", "Lied"
     };
 
     // Construtor privado para evitar instanciação direta (Singleton)
