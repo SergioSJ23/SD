@@ -12,7 +12,7 @@ public class MVotersId implements IVotersId_all {
 
     // Variável para armazenar o ID atual
     private int id;
-    private final int repeatVoter = 90;
+    private final int repeatVoter = 30;
     private final static ArrayList<Integer> idList = new ArrayList<>();
     private final static Set<Integer> currentIds = new HashSet<>(); // Register of current IDs
 
@@ -53,21 +53,7 @@ public class MVotersId implements IVotersId_all {
             // Reuse an existing ID from the list, but ensure it's not already in use
             synchronized (idList) {
                 if (!idList.isEmpty()) {
-                    // Create a list of reusable IDs (IDs in idList but not in currentIds)
-                    ArrayList<Integer> reusableIds = new ArrayList<>();
-                    for (Integer existingId : idList) {
-                        if (!currentIds.contains(existingId)) {
-                            reusableIds.add(existingId);
-                        }
-                    }
-
-                    if (!reusableIds.isEmpty()) {
-                        // Pick a random ID from the reusable IDs
-                        int randomIndex = ThreadLocalRandom.current().nextInt(reusableIds.size());
-                        int reusedId = reusableIds.get(randomIndex);
-                        currentIds.add(reusedId);
-                        return reusedId;
-                    }
+                    return id;
                 }
 
                 // If no reusable ID is available, generate a new ID

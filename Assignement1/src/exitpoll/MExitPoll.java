@@ -16,13 +16,9 @@ public class MExitPoll implements IExitPoll_all {
     // Variáveis para armazenar o voto e o ID do eleitor atual
     private char vote;
     private int voterId;
-
-    // Probabilidades de mentir, não responder e ser abordado
-    private final int lie = 20; // 20% de chance de mentir
-    private final int noResponse = 0; // 0% de chance de não responder (pode ser ajustado)
-    private final int approached = 100; // 100% de chance de ser abordado (pode ser ajustado)
-
-    // Lock para sincronização em ambiente multi-thread
+    private final int lie = 20;
+    private final int noResponse = 40;
+    private final int approached = 10;
     private final ReentrantLock lock = new ReentrantLock();
 
     // Instância única da classe (Singleton)
