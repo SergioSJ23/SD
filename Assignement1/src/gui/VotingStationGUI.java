@@ -1,10 +1,10 @@
 package gui;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import javax.swing.*;
 import main.*;
 import repository.MRepository;
 import threads.TVoter;
@@ -105,7 +105,7 @@ public class VotingStationGUI implements VoterObserver {
         exitPollPanel.setBackground(Color.WHITE);
 
         // Subpainéis da sondagem de saída
-        exitPollingAreaPanel = createPanel("Exit Polling Area", Color.GRAY); // Área de sondagem
+        exitPollingAreaPanel = createPanel("Exit Polling Area", Color.GRAY); // area de sondagem
         pollsterPanel = createPanel("Pollster", Color.GRAY); // Entrevistador
         pollsterVotesPanel = new JPanel(new GridLayout(2, 1)); // Painel para os votos da sondagem
         pollsterVotesPanel.setBorder(BorderFactory.createTitledBorder("Pollster Votes")); // Título do painel

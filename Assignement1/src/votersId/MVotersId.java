@@ -11,8 +11,7 @@ public class MVotersId implements IVotersId_all {
     private static MVotersId instance;
 
     // Variável para armazenar o ID atual
-    private int id;
-    private final int repeatVoter = 30;
+    private final int repeatVoter = 80;
     private final static ArrayList<Integer> idList = new ArrayList<>();
     private final static Set<Integer> currentIds = new HashSet<>(); // Register of current IDs
 
@@ -34,9 +33,6 @@ public class MVotersId implements IVotersId_all {
     public int reborn(int id) {
     synchronized (currentIds) {
         // Remove the old ID from the currentIds set if it exists
-        if (currentIds.contains(id)) {
-            currentIds.remove(id);
-        }
 
         if (ThreadLocalRandom.current().nextInt(0, 100) >= this.repeatVoter) {
             // Generate a new unique ID and add it to the list and currentIds set
@@ -47,13 +43,15 @@ public class MVotersId implements IVotersId_all {
                 } while (idList.contains(newId) || currentIds.contains(newId)); // Ensure the ID is unique
                 idList.add(newId);
             }
+            if (currentIds.contains(id)) {
+                currentIds.remove(id);
+            }
             currentIds.add(newId);
             return newId;
         } else {
             // Reuse an existing ID from the list, but ensure it's not already in use
             synchronized (idList) {
                 if (!idList.isEmpty()) {
-                    currentIds.add(id);
                     return id;
                 }
 
@@ -63,6 +61,9 @@ public class MVotersId implements IVotersId_all {
                     newId = ThreadLocalRandom.current().nextInt(1, 1000); // Generate a new 4-digit ID
                 } while (idList.contains(newId) || currentIds.contains(newId)); // Ensure uniqueness
                 idList.add(newId);
+                if (currentIds.contains(id)) {
+                    currentIds.remove(id);
+                }
                 currentIds.add(newId);
                 return newId;
             }
