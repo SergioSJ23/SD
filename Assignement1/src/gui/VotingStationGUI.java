@@ -2,28 +2,20 @@ package gui;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.*;
-import main.*;
 import repository.MRepository;
-import threads.TVoter;
 
 // Classe que implementa a interface gráfica (GUI) para o sistema de votação
 public class VotingStationGUI implements VoterObserver {
     // Componentes da interface gráfica
     private static JFrame frame; // Janela principal
-    private static Map<Integer, JLabel> voterLabels = new HashMap<>(); // Mapa para armazenar os rótulos dos eleitores
+    private final static Map<Integer, JLabel> voterLabels = new HashMap<>(); // Mapa para armazenar os rótulos dos eleitores
     private static JPanel votesPanel; // Painel para exibir os votos
     private static JLabel votesALabel; // Rótulo para votos da opção A
     private static JLabel votesBLabel; // Rótulo para votos da opção B
     private static JLabel pollsterVotesALabel; // Rótulo para votos da opção A na sondagem
     private static JLabel pollsterVotesBLabel; // Rótulo para votos da opção B na sondagem
-
-    // Variáveis estáticas para armazenar o número de eleitores, a capacidade da estação e a lista de eleitores
-    private static int numVoters = Main.getNumVoters();
-    private static int capacityCap = Main.getCapacityCap();
-    private static List<TVoter> voters = Main.getVoters();
 
     // Painéis para diferentes áreas da interface
     private static JPanel entrancePanel; // Painel para a entrada dos eleitores

@@ -36,10 +36,10 @@ public class MRepository implements IRepository_all {
     private boolean votingDayEnded = false; // Indica se o dia de eleições terminou
 
     // Atributos relacionados com a estação de votação (Station)
-    private int[] votes = new int[2]; // Array para armazenar votos (A e B)
+    private final int[] votes = new int[2]; // Array para armazenar votos (A e B)
 
     // Lista de IDs de eleitores
-    private ArrayList<Integer> idList = new ArrayList<>();
+    private final ArrayList<Integer> idList = new ArrayList<>();
 
     // Mapa para armazenar o estado atual dos eleitores (ID -> Estado)
     private final Map<Integer, Integer> voterState = new HashMap<>();

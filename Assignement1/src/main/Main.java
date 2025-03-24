@@ -15,7 +15,7 @@ public class Main {
     // Variáveis estáticas para armazenar o número de eleitores e a capacidade máxima da estação
     private static int numVoters = 0; // Número de eleitores
     private static int capacityCap = 0; // Capacidade máxima da estação de votação
-    private static List<TVoter> voters = new java.util.ArrayList<>(); // Lista de threads dos eleitores
+    private final static List<TVoter> voters = new java.util.ArrayList<>(); // Lista de threads dos eleitores
 
     // Método para obter o número de eleitores
     public static int getNumVoters() {
@@ -102,7 +102,7 @@ public class Main {
             try {
                 voter.join(); // Espera a thread terminar
             } catch (InterruptedException e) {
-                e.printStackTrace(); // Trata interrupções
+               System.err.println(e); // Log da interrupção
             }
         }
 
@@ -115,7 +115,7 @@ public class Main {
             tclerk.join();
             tpollster.join();
         } catch (InterruptedException e) {
-            e.printStackTrace(); // Trata interrupções
+            System.err.println(e); // Log da interrupção
         }
     }
 }

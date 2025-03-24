@@ -1,7 +1,6 @@
 package threads;
 
 import exitpoll.IExitPoll_Voter;
-import gui.VoterObserver;
 import java.util.concurrent.ThreadLocalRandom;
 import station.IStation_Voter;
 import votersId.IVoterId_Voter;
@@ -17,7 +16,6 @@ public class TVoter extends Thread {
     private final IVotesBooth_Voter votesBooth; // Urna de votação
     private final IExitPoll_Voter exitPoll; // Sondagem de saída
     private final IVoterId_Voter voterId; // Gerador de IDs de eleitores
-    private VoterObserver observer; // Observador para atualizações da interface gráfica
 
     // Construtor da classe TVoter
     private TVoter(IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll, IVoterId_Voter voterId) {
@@ -25,11 +23,6 @@ public class TVoter extends Thread {
         this.votesBooth = votesBooth;
         this.exitPoll = exitPoll;
         this.voterId = voterId;
-    }
-
-    // Método para registar um observador (para atualizações da interface gráfica)
-    public void registerObserver(VoterObserver observer) {
-        this.observer = observer;
     }
 
     // Método principal da thread
@@ -64,8 +57,8 @@ public class TVoter extends Thread {
                 // Sai da sondagem de saída
                 exitPoll.leaveExitPoll(this.id);
             }
-        } catch (Exception e) {
-            e.printStackTrace(); // Trata exceções
+        } catch (InterruptedException e) {
+            System.err.println(e); // Log da exceção
         }
         System.out.println("Voter interrupted"); // Mensagem de interrupção
     }
