@@ -36,8 +36,9 @@ public class TVoter extends Thread {
     @Override
     public void run() {
         try {
+            id = 0;
             while (true) {
-                id = voterId.reborn();
+                id = voterId.reborn(id);
                 chooseVote();
                 //notifyObserver("Entrance");
                 station.enterStation(this.id);
