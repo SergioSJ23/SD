@@ -13,8 +13,8 @@ public class MExitPoll implements IExitPoll_all {
     private char vote;
     private int voterId;
     private final int lie = 20;
-    private final int noResponse = 0;
-    private final int approached = 60;
+    private final int noResponse = 40;
+    private final int approached = 10;
     private final ReentrantLock lock = new ReentrantLock();
     private static IExitPoll_all instance;
     private final Condition pollsterCondition = lock.newCondition();
