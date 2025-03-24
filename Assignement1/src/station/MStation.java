@@ -73,6 +73,11 @@ public class MStation implements IStation_all {
 
         try {
             queue.put(id);
+            if (electionDayEnded){
+                queue.remove(id);
+                Thread.currentThread().interrupt();
+                return;
+            }
             repository.Senter(id);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore the interrupt status
@@ -107,7 +112,6 @@ public class MStation implements IStation_all {
             while (!clerkReady) {
                 clerkCondition.await();
             }
-
             int id = queue.peek();
             Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
             if (idSet.contains(id)) {
@@ -122,6 +126,7 @@ public class MStation implements IStation_all {
             }
             clerkReady = false; // Reset clerk readiness for the next voter
             voterCondition.signalAll(); // Notify the voter to continue
+
         } finally {
             lock.unlock();
         }
@@ -187,12 +192,18 @@ public class MStation implements IStation_all {
 
     @Override
     public boolean countVotes() {
-        return limitVotes <= 0;
+            return limitVotes <= 0;
     }
 
     @Override
     public void announceEnding(){
-        electionDayEnded = true;
-        repository.SannounceEnding();
+        lock.lock();
+        try {
+            electionDayEnded = true;
+            repository.SannounceEnding();
+        } finally {
+            lock.unlock();
+        }
+        
     }
 }

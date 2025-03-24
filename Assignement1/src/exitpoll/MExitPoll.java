@@ -100,11 +100,7 @@ public class MExitPoll implements IExitPoll_all {
             increment(vote == 'A' ? 0 : 1);
             if (rand.nextInt(100) > noResponse) { // 60% chance of not responding
                 if (rand.nextInt(100) < lie) { // 20% chance of lying
-                    if (vote == 'A') {
-                        repository.EPlied(voterId , vote);
-                    } else {
-                        repository.EPlied(voterId , vote);
-                    }
+                    repository.EPlied(voterId , vote);
                 } else {
                     repository.EPtruth(voterId , vote);
                 }

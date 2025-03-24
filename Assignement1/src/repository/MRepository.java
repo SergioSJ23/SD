@@ -311,8 +311,10 @@ private void printHead() {
     // Print headers (states) with fixed width
     StringBuilder header = new StringBuilder();
     for (String state : possibleStates) {
-        header.append(String.format("%-20s | ", state)); // Fixed width of 15 characters for each column
+        header.append(String.format("%-20s | ", state)); // Fixed width of 20 characters for each column
     }
+    header.append("Votes A       | Votes B       | Exit A        | Exit B        ");
+
     log.writelnString("=== Voting System Log ===");
     log.writelnString(header.toString());
     log.writelnString("------------------------------------------------------------------");
@@ -322,6 +324,9 @@ private void printHead() {
     }
 }
 
+/**
+ * Write the current state to the logging file.
+ */
 /**
  * Write the current state to the logging file.
  */
@@ -354,8 +359,12 @@ private void printState() {
     StringBuilder stateLine = new StringBuilder();
     for (int i = 0; i < possibleStates.length; i++) {
         String voters = stateToVoters.get(i).toString();
-        stateLine.append(String.format("%-20s | ", voters)); // Fixed width of 15 characters for each column
+        stateLine.append(String.format("%-20s | ", voters)); // Fixed width of 20 characters for each column
     }
+
+    // Append the vote counts to the state line
+    stateLine.append(String.format(" %-12d | %-12d | %-12d | %-12d", 
+                                   votesA, votesB, exitVotesA, exitVotesB));
 
     // Write the row to the log file
     log.writelnString(stateLine.toString());
