@@ -4,6 +4,8 @@ import exitpoll.IExitPoll_Clerk;
 import exitpoll.MExitPoll;
 import station.IStation_Clerk;
 import station.MStation;
+import votesbooth.IVotesBooth_Clerk;
+import votesbooth.MVotesBooth;
 
 public class TClerk extends Thread{
 
@@ -11,6 +13,7 @@ public class TClerk extends Thread{
     private boolean limitReached;
     IStation_Clerk station = MStation.getInstance(100);
     IExitPoll_Clerk exitPoll = MExitPoll.getInstance();
+    IVotesBooth_Clerk votesBooth = MVotesBooth.getInstance();
     
     
     private TClerk() {
@@ -33,6 +36,7 @@ public class TClerk extends Thread{
         } catch (InterruptedException e) {
             while (station.lastVotes()){}
             exitPoll.stationIsClosed();
+            votesBooth.getVotes();
             System.out.println("Clerk interrupted");
         }
     }

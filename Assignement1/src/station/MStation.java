@@ -13,7 +13,7 @@ public class MStation implements IStation_all {
 
     private boolean closen = true;
     private static boolean electionDayEnded = false;
-    private static int limitVotes = 50;
+    private int limitVotes = 50;
     private final ReentrantLock lock = new ReentrantLock();
     private final HashSet<Integer> idSet = new HashSet<>();
     private static MStation instance;
@@ -58,8 +58,12 @@ public class MStation implements IStation_all {
         try {
             System.out.println("AAAAAAAAAAAA");
             while (closen && !electionDayEnded) {
-                repository.Swait(id);
-                statusCondition.await();
+                try {
+                    statusCondition.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
         } finally {
             lock.unlock();
@@ -69,10 +73,19 @@ public class MStation implements IStation_all {
             return;
         }
 
-        queue.put(id);
-        System.out.println("BBBBBBBBBBBB");
-        repository.Senter(id);
-        
+        try {
+            queue.put(id);
+            Thread.sleep(100);
+            if (electionDayEnded){
+                queue.remove(id);
+                Thread.currentThread().interrupt();
+                return;
+            }
+            repository.Senter(id);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore the interrupt status
+            throw e; // Re-throw the exception to propagate the interruption
+        }
     }
 
     @Override
@@ -103,21 +116,22 @@ public class MStation implements IStation_all {
             while (!clerkReady) {
                 clerkCondition.await();
             }
-
             int id = queue.peek();
             Thread.sleep(rand.nextInt(6) + 5);  // Simulate validation time
             if (idSet.contains(id)) {
                 repository.Srejected(id);
                 this.isIdValid = false;  // Mark as invalid
             } else {
+                System.out.println("validated " + id);
                 idSet.add(id);
                 repository.Svalidated(id);
                 this.isIdValid = true;  // Mark as valid
-                limitVotes -= 1;
+                decrementLimit();
                 repository.SaddId(id);
             }
             clerkReady = false; // Reset clerk readiness for the next voter
             voterCondition.signalAll(); // Notify the voter to continue
+
         } finally {
             lock.unlock();
         }
@@ -140,7 +154,7 @@ public class MStation implements IStation_all {
                 idSet.add(id);
                 repository.Svalidated(id);
                 this.isIdValid = true;  // Mark as valid
-                limitVotes -= 1;
+                decrementLimit();
                 repository.SaddId(id);
             }
             if (queue.size() <= 0) {
@@ -190,7 +204,23 @@ public class MStation implements IStation_all {
 
     @Override
     public void announceEnding(){
-        electionDayEnded = true;
-        repository.SannounceEnding();
+        lock.lock();
+        try {
+            electionDayEnded = true;
+            repository.SannounceEnding();
+        } finally {
+            lock.unlock();
+        }
+        
+    }
+
+    private void decrementLimit(){
+        lock.lock();
+        System.out.println(limitVotes);
+        try {
+            limitVotes--;
+        } finally {
+            lock.unlock();
+        }
     }
 }
