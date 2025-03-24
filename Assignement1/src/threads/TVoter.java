@@ -61,7 +61,7 @@ public class TVoter extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Voter " + this.id + " is done");
+        System.out.println("Voter interrupted");
     }
 
 

@@ -91,6 +91,7 @@ public class MRepository implements IRepository_all {
         try {
             System.out.println("Votes for A: " + votesA);
             System.out.println("Votes for B: " + votesB);
+            printTail();
         } finally {
             lock.unlock();
         }
@@ -313,7 +314,7 @@ private void printHead() {
     for (String state : possibleStates) {
         header.append(String.format("%-20s | ", state)); // Fixed width of 20 characters for each column
     }
-    header.append("Votes A       | Votes B       | Exit A        | Exit B        ");
+    header.append("Votes A       | Votes B      | Exit A       | Exit B       | Closed   ");
 
     log.writelnString("=== Voting System Log ===");
     log.writelnString(header.toString());
@@ -361,10 +362,10 @@ private void printState() {
         String voters = stateToVoters.get(i).toString();
         stateLine.append(String.format("%-20s | ", voters)); // Fixed width of 20 characters for each column
     }
-
+    
     // Append the vote counts to the state line
-    stateLine.append(String.format(" %-12d | %-12d | %-12d | %-12d", 
-                                   votesA, votesB, exitVotesA, exitVotesB));
+    stateLine.append(String.format(" %-12d | %-12d | %-12d | %-12d | %-12s", 
+                                   votesA, votesB, exitVotesA, exitVotesB, isClosed));
 
     // Write the row to the log file
     log.writelnString(stateLine.toString());
@@ -386,6 +387,7 @@ private void printState() {
         }
 
         log.writelnString("Voting day has ended. Total votes: A = " + votesA + ", B = " + votesB);
+        log.writelnString("Voting day has ended. Exit Poll votes: A = " + exitVotesA + ", B = " + exitVotesB);
 
         if (!log.close()) {
             GenericIO.writelnString("While trying to close the file " + logFileName + " the process failed.");

@@ -13,7 +13,7 @@ public class MStation implements IStation_all {
 
     private boolean closen = true;
     private static boolean electionDayEnded = false;
-    private static int limitVotes = 50;
+    private int limitVotes = 50;
     private final ReentrantLock lock = new ReentrantLock();
     private final HashSet<Integer> idSet = new HashSet<>();
     private static MStation instance;
@@ -73,6 +73,7 @@ public class MStation implements IStation_all {
 
         try {
             queue.put(id);
+            Thread.sleep(100);
             if (electionDayEnded){
                 queue.remove(id);
                 Thread.currentThread().interrupt();
@@ -118,10 +119,11 @@ public class MStation implements IStation_all {
                 repository.Srejected(id);
                 this.isIdValid = false;  // Mark as invalid
             } else {
+                System.out.println("validated " + id);
                 idSet.add(id);
                 repository.Svalidated(id);
                 this.isIdValid = true;  // Mark as valid
-                limitVotes -= 1;
+                decrementLimit();
                 repository.SaddId(id);
             }
             clerkReady = false; // Reset clerk readiness for the next voter
@@ -149,7 +151,7 @@ public class MStation implements IStation_all {
                 idSet.add(id);
                 repository.Svalidated(id);
                 this.isIdValid = true;  // Mark as valid
-                limitVotes -= 1;
+                decrementLimit();
                 repository.SaddId(id);
             }
             if (queue.size() <= 0) {
@@ -192,7 +194,7 @@ public class MStation implements IStation_all {
 
     @Override
     public boolean countVotes() {
-            return limitVotes <= 0;
+        return limitVotes <= 0;
     }
 
     @Override
@@ -205,5 +207,15 @@ public class MStation implements IStation_all {
             lock.unlock();
         }
         
+    }
+
+    private void decrementLimit(){
+        lock.lock();
+        System.out.println(limitVotes);
+        try {
+            limitVotes--;
+        } finally {
+            lock.unlock();
+        }
     }
 }
