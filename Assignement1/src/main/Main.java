@@ -10,111 +10,112 @@ import votesbooth.*;
 import gui.*;
 import repository.MRepository;
 
+// Classe principal que inicia e gere o sistema de votação
 public class Main {
-    private static int numVoters = 0;
-    private static int capacityCap = 0;
-    private static List<TVoter> voters = new java.util.ArrayList<>();
+    // Variáveis estáticas para armazenar o número de eleitores e a capacidade máxima da estação
+    private static int numVoters = 0; // Número de eleitores
+    private static int capacityCap = 0; // Capacidade máxima da estação de votação
+    private static List<TVoter> voters = new java.util.ArrayList<>(); // Lista de threads dos eleitores
 
-    public static int getNumVoters(){
+    // Método para obter o número de eleitores
+    public static int getNumVoters() {
         return numVoters;
-    } 
+    }
 
-    public static int getCapacityCap(){
+    // Método para obter a capacidade máxima da estação
+    public static int getCapacityCap() {
         return capacityCap;
     }
 
-    public static List<TVoter> getVoters(){
+    // Método para obter a lista de threads dos eleitores
+    public static List<TVoter> getVoters() {
         return voters;
     }
 
+    // Método principal
     public static void main(String args[]) {
+        // Scanner para ler a entrada do utilizador
         try (Scanner sc = new Scanner(System.in)) {
             String input;
 
-            
-            do{
-                try
-                {
-                    System.out.println("Enter the number of voters(min 3, max 10): ");
+            // Solicita o número de eleitores (entre 3 e 10)
+            do {
+                try {
+                    System.out.println("Introduza o número de eleitores (mín 3, máx 10): ");
                     input = sc.nextLine();
-                    numVoters = Integer.parseInt(input);
-                } catch(NumberFormatException e){
-                    System.out.println("Invalid input");            
+                    numVoters = Integer.parseInt(input); // Converte a entrada para inteiro
+                } catch (NumberFormatException e) {
+                    System.out.println("Entrada inválida"); // Trata entradas inválidas
                 }
-            }while(numVoters  < 3 || numVoters > 10);
+            } while (numVoters < 3 || numVoters > 10); // Repete até que a entrada seja válida
 
-            do{
-                try
-                {
-                    System.out.println("Enter the capacity cap(min 2, max 5): ");
+            // Solicita a capacidade máxima da estação (entre 2 e 5)
+            do {
+                try {
+                    System.out.println("Introduza a capacidade máxima da estação (mín 2, máx 5): ");
                     input = sc.nextLine();
-                    capacityCap = Integer.parseInt(input);
-                } catch(NumberFormatException e){
-                    System.out.println("Invalid input");
+                    capacityCap = Integer.parseInt(input); // Converte a entrada para inteiro
+                } catch (NumberFormatException e) {
+                    System.out.println("Entrada inválida"); // Trata entradas inválidas
                 }
-            }while(capacityCap  < 2 || capacityCap > 5);
-            
-
+            } while (capacityCap < 2 || capacityCap > 5); // Repete até que a entrada seja válida
         }
 
-        //monitors
+        // Instâncias dos monitores (estação, sondagem de saída, urna de votação e gerador de IDs)
         IStation_all station;
         IExitPoll_all exitPoll;
         IVotesBooth_all votesBooth;
         IVotersId_all votersID;
 
-        // Register the GUI as an observer
+        // Regista a interface gráfica (GUI) como observadora no repositório
         VotingStationGUI gui = new VotingStationGUI();
         MRepository.getInstance().addObserver(gui);
 
-
-        //threads
+        // Threads do funcionário (clerk) e do entrevistador (pollster)
         Thread tpollster;
         Thread tclerk;
-        
-        
-        
-        // Instantiate the variables with the correct values
-        station = MStation.getInstance(capacityCap);
-        exitPoll = MExitPoll.getInstance();
-        votesBooth = MVotesBooth.getInstance();
-        votersID = MVotersId.getInstance();
 
-        // Create the threads
-        tclerk = new Thread(TClerk.getInstance());
-        tclerk.start();
-        tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll));
-        tpollster.start();
+        // Inicializa os monitores com as instâncias corretas
+        station = MStation.getInstance(capacityCap); // Estação de votação com capacidade definida
+        exitPoll = MExitPoll.getInstance(); // Sondagem de saída
+        votesBooth = MVotesBooth.getInstance(); // Urna de votação
+        votersID = MVotersId.getInstance(); // Gerador de IDs de eleitores
 
-        // Start the GUI
+        // Cria e inicia as threads do funcionário e do entrevistador
+        tclerk = new Thread(TClerk.getInstance()); // Thread do funcionário
+        tclerk.start(); // Inicia a thread
+        tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster) exitPoll)); // Thread do entrevistador
+        tpollster.start(); // Inicia a thread
+
+        // Inicia a interface gráfica (GUI)
         VotingStationGUI.run();
 
+        // Cria e inicia as threads dos eleitores
         for (int i = 0; i < numVoters; i++) {
             TVoter voter = new TVoter((IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll, (IVoterId_Voter) votersID);
-            //voter.registerObserver(observer);
-            voter.start();
-            voters.add(voter); // Adiciona a thread à lista
+            voter.start(); // Inicia a thread do eleitor
+            voters.add(voter); // Adiciona a thread à lista de eleitores
         }
 
-        // Espera que todas as threads terminem
+        // Espera que todas as threads dos eleitores terminem
         for (TVoter voter : voters) {
             try {
                 voter.join(); // Espera a thread terminar
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                e.printStackTrace(); // Trata interrupções
             }
         }
 
+        // Interrompe as threads do funcionário e do entrevistador
         tclerk.interrupt();
         tpollster.interrupt();
 
-        // Wait for the threads to finish
+        // Espera que as threads do funcionário e do entrevistador terminem
         try {
             tclerk.join();
             tpollster.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Trata interrupções
         }
-        
     }
 }
