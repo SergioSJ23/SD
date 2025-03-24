@@ -1,11 +1,8 @@
 package threads;
 
 import exitpoll.IExitPoll_Clerk;
-import exitpoll.MExitPoll;
 import station.IStation_Clerk;
-import station.MStation;
 import votesbooth.IVotesBooth_Clerk;
-import votesbooth.MVotesBooth;
 
 // Classe que representa um funcionário (clerk) como uma thread
 public class TClerk extends Thread {
@@ -15,14 +12,15 @@ public class TClerk extends Thread {
 
     // Flag para indicar se o limite de votos foi atingido
     private boolean limitReached;
-
-    // Referências para as instâncias das estações, urnas e sondagens
-    IStation_Clerk station = MStation.getInstance(100); // Estação de votação com limite de 100 votos
-    IExitPoll_Clerk exitPoll = MExitPoll.getInstance(); // Sondagem de saída
-    IVotesBooth_Clerk votesBooth = MVotesBooth.getInstance(); // Urna de votação
+    private final IStation_Clerk station; // Estação de votação
+    private final IVotesBooth_Clerk votesBooth; // Urna de votação
+    private final IExitPoll_Clerk exitPoll; // Sondagem de saída
 
     // Construtor privado para evitar instanciação direta (Singleton)
-    private TClerk() {
+    private TClerk(IStation_Clerk station, IVotesBooth_Clerk votesBooth, IExitPoll_Clerk exitPoll) {
+        this.station = station;
+        this.votesBooth = votesBooth;
+        this.exitPoll = exitPoll;
     }
 
     // Método principal da thread
@@ -63,9 +61,9 @@ public class TClerk extends Thread {
     }
 
     // Método estático para obter a instância única da classe (Singleton)
-    public static TClerk getInstance() {
+    public static TClerk getInstance(IStation_Clerk station, IVotesBooth_Clerk votesBooth, IExitPoll_Clerk exitPoll) {
         if (instance == null) {
-            instance = new TClerk(); // Cria a instância se não existir
+            instance = new TClerk(station, votesBooth, exitPoll); // Cria a instância se não existir
         }
         return instance; // Retorna a instância existente
     }

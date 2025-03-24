@@ -20,7 +20,7 @@ public class TVoter extends Thread {
     private VoterObserver observer; // Observador para atualizações da interface gráfica
 
     // Construtor da classe TVoter
-    public TVoter(IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll, IVoterId_Voter voterId) {
+    private TVoter(IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll, IVoterId_Voter voterId) {
         this.station = station;
         this.votesBooth = votesBooth;
         this.exitPoll = exitPoll;
@@ -78,4 +78,10 @@ public class TVoter extends Thread {
             this.vote = 'B'; // Vota em 'B' com 50% de probabilidade
         }
     }
+
+    // Método estático para obter a instância única da classe (Singleton)
+    public static TVoter getInstance(IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll, IVoterId_Voter voterId) {
+        return new TVoter(station, votesBooth, exitPoll, voterId); // Always return a new instance
+    }
+    
 }

@@ -1,14 +1,14 @@
 package main;
 
 import exitpoll.*;
+import gui.*;
 import java.util.List;
 import java.util.Scanner;
+import repository.MRepository;
 import station.*;
 import threads.*;
 import votersId.*;
 import votesbooth.*;
-import gui.*;
-import repository.MRepository;
 
 public class Main {
     private static int numVoters = 0;
@@ -81,7 +81,7 @@ public class Main {
         votersID = MVotersId.getInstance();
 
         // Create the threads
-        tclerk = new Thread(TClerk.getInstance());
+        tclerk = new Thread(TClerk.getInstance((IStation_Clerk) station, (IVotesBooth_Clerk) votesBooth, (IExitPoll_Clerk) exitPoll));
         tclerk.start();
         tpollster = new Thread(TPollster.getInstance((IExitPoll_Pollster)exitPoll));
         tpollster.start();
@@ -90,7 +90,7 @@ public class Main {
         VotingStationGUI.run();
 
         for (int i = 0; i < numVoters; i++) {
-            TVoter voter = new TVoter((IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll, (IVoterId_Voter) votersID);
+            TVoter voter = TVoter.getInstance((IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll, (IVoterId_Voter) votersID);
             //voter.registerObserver(observer);
             voter.start();
             voters.add(voter); // Adiciona a thread à lista
