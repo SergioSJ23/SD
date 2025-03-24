@@ -9,54 +9,78 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.List;
 import gui.VoterObserver;
 
+// Classe que implementa a interface IRepository_all para gerir o repositório do sistema de votação
 public class MRepository implements IRepository_all {
 
+    // Instância única da classe (Singleton)
     private static MRepository instance;
+
+    // Lock para sincronização em ambiente multi-thread
     private final ReentrantLock lock = new ReentrantLock();
+
+    // Nome do ficheiro de log
     private final String logFileName = "voting_log.txt";
 
-    // Atributos do VotesBooth
-    private int numVotes = 0;
-    private int votesA = 0;
-    private int votesB = 0;
+    // Atributos relacionados com a urna de votação (VotesBooth)
+    private int numVotes = 0; // Número total de votos
+    private int votesA = 0;   // Votos para a opção A
+    private int votesB = 0;   // Votos para a opção B
 
-    // Atributos do ExitPoll
-    private int exitVotesA = 0;
-    private int exitVotesB = 0;
-    private int exitVotes = 0;
+    // Atributos relacionados com a sondagem de saída (ExitPoll)
+    private int exitVotesA = 0; // Votos para A na sondagem de saída
+    private int exitVotesB = 0; // Votos para B na sondagem de saída
+    private int exitVotes = 0;  // Total de votos na sondagem de saída
 
     // Variáveis de controle do ExitPoll
-    private boolean isClosed = false;
-    private boolean votingDayEnded = false;
+    private boolean isClosed = false;      // Indica se a sondagem de saída está fechada
+    private boolean votingDayEnded = false; // Indica se o dia de eleições terminou
 
-    // Atributos da Station
-    private int[] votes = new int[2];
+    // Atributos relacionados com a estação de votação (Station)
+    private int[] votes = new int[2]; // Array para armazenar votos (A e B)
 
-    // Variáveis de controle do VotesBooth
+    // Lista de IDs de eleitores
     private ArrayList<Integer> idList = new ArrayList<>();
-    
-    // Map to store voter states
-    private final Map<Integer, Integer> voterState = new HashMap<>(); // Key: Voter ID, Value: State
-    private final List<VoterObserver> observers = new ArrayList<>(); // Observers list
 
-    // Possible states
+    // Mapa para armazenar o estado atual dos eleitores (ID -> Estado)
+    private final Map<Integer, Integer> voterState = new HashMap<>();
+
+    // Lista de observadores (para atualizações da interface gráfica)
+    private final List<VoterObserver> observers = new ArrayList<>();
+
+    // Estados possíveis dos eleitores
     private final String[] possibleStates = {
         "Station", "Presenting", "Validated", "Rejected",
         "Voted", "Exit Poll", "Approached", "Truth", "Lied", "Left Pollster"
     };
 
+    // Construtor privado para evitar instanciação direta (Singleton)
     private MRepository() {
-        printHead(); // Initialize the log file with a header
+        printHead(); // Inicializa o ficheiro de log com um cabeçalho
     }
 
+    // Método estático para obter a instância única da classe (Singleton)
     public static MRepository getInstance() {
         if (instance == null) {
-            instance = new MRepository();
+            instance = new MRepository(); // Cria a instância se não existir
         }
-        return instance;
+        return instance; // Retorna a instância existente
     }
 
-    // Observer management
+    public int getVotesA() {
+        return votesA;
+    }
+
+    public int getVotesB() {
+        return votesB;
+    }
+
+    // ================= Métodos de Gestão de Observadores =================
+
+    /**
+     * Adiciona um observador à lista de observadores.
+     * 
+     * @param observer O observador a ser adicionado.
+     */
     public void addObserver(VoterObserver observer) {
         lock.lock();
         try {
@@ -66,6 +90,11 @@ public class MRepository implements IRepository_all {
         }
     }
 
+    /**
+     * Remove um observador da lista de observadores.
+     * 
+     * @param observer O observador a ser removido.
+     */
     public void removeObserver(VoterObserver observer) {
         lock.lock();
         try {
@@ -75,30 +104,27 @@ public class MRepository implements IRepository_all {
         }
     }
 
+    /**
+     * Notifica todos os observadores sobre uma atualização no estado de um eleitor.
+     * 
+     * @param voterId O ID do eleitor.
+     * @param state O estado atual do eleitor.
+     * @param validationResult O resultado da validação (true se válido, false caso contrário).
+     */
     private void notifyObservers(int voterId, String state, boolean validationResult) {
         for (VoterObserver observer : observers) {
             observer.updateVoterState(voterId, state, validationResult);
         }
     }
 
-    public int getVotesA() {
-        return votesA;
-    }
-    
-    public int getVotesB() {
-        return votesB;
-    }
-    
-
-    // ================= Métodos do VotesBooth =================
+    // ================= Métodos da VotesBooth =================
 
     @Override
     public void VBincrementA() {
         lock.lock();
         try {
-            votesA++;
-            numVotes++;
-            
+            votesA++; // Incrementa os votos para A
+            numVotes++; // Incrementa o total de votos
         } finally {
             lock.unlock();
         }
@@ -108,9 +134,8 @@ public class MRepository implements IRepository_all {
     public void VBincrementB() {
         lock.lock();
         try {
-            votesB++;
-            numVotes++;
-            
+            votesB++; // Incrementa os votos para B
+            numVotes++; // Incrementa o total de votos
         } finally {
             lock.unlock();
         }
@@ -120,10 +145,9 @@ public class MRepository implements IRepository_all {
     public void VBvote(char vote, int id) {
         lock.lock();
         try {
-            
-            voterState.put(id, 4); // Mark voter as having voted
-            notifyObservers(id, "Voted", false);
-            printState();
+            voterState.put(id, 4); // Marca o eleitor como tendo votado
+            notifyObservers(id, "Voted", false); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
@@ -135,20 +159,20 @@ public class MRepository implements IRepository_all {
         try {
             System.out.println("Votes for A: " + votesA);
             System.out.println("Votes for B: " + votesB);
-            printTail();
+            printTail(); // Escreve o estado final no ficheiro de log
         } finally {
             lock.unlock();
         }
     }
 
-    // ================= Métodos do ExitPoll =================
+    // ================= Métodos da ExitPoll =================
 
     @Override
     public void EPincrementA() {
         lock.lock();
         try {
-            exitVotesA++;
-            exitVotes++;
+            exitVotesA++; // Incrementa os votos para A na sondagem de saída
+            exitVotes++; // Incrementa o total de votos na sondagem de saída
         } finally {
             lock.unlock();
         }
@@ -158,8 +182,8 @@ public class MRepository implements IRepository_all {
     public void EPincrementB() {
         lock.lock();
         try {
-            exitVotesB++;
-            exitVotes++;
+            exitVotesB++; // Incrementa os votos para B na sondagem de saída
+            exitVotes++; // Incrementa o total de votos na sondagem de saída
         } finally {
             lock.unlock();
         }
@@ -169,9 +193,8 @@ public class MRepository implements IRepository_all {
     public void EPclose() {
         lock.lock();
         try {
-            isClosed = true;
+            isClosed = true; // Marca a sondagem de saída como fechada
             System.out.println("Exit poll knows the station is closed");
-            
         } finally {
             lock.unlock();
         }
@@ -181,10 +204,9 @@ public class MRepository implements IRepository_all {
     public void EPenter(char vote, int id) {
         lock.lock();
         try {
-            
-            voterState.put(id, 5); // Mark voter as in exit poll
-            notifyObservers(id, "Exit Polling Area", false);
-            printState();
+            voterState.put(id, 5); // Marca o eleitor como estando na sondagem de saída
+            notifyObservers(id, "Exit Polling Area", false); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
@@ -194,11 +216,9 @@ public class MRepository implements IRepository_all {
     public void EPapproached(int id) {
         lock.lock();
         try {
-            
-            voterState.put(id, 6); // Mark voter as approached
-            notifyObservers(id, "Pollster", false);
-            System.out.println();
-            printState();
+            voterState.put(id, 6); // Marca o eleitor como tendo sido abordado
+            notifyObservers(id, "Pollster", false); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
@@ -208,9 +228,9 @@ public class MRepository implements IRepository_all {
     public void EPtruth(int id, char vote) {
         lock.lock();
         try {
-            voterState.put(id, 7); // Mark voter as having told the truth
-            notifyObservers(id, "Truth", true);
-            printState();
+            voterState.put(id, 7); // Marca o eleitor como tendo dito a verdade
+            notifyObservers(id, "Truth", true); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
@@ -220,10 +240,9 @@ public class MRepository implements IRepository_all {
     public void EPleave(int id) {
         lock.lock();
         try {
-            voterState.remove(id); // Remove voter from the state map
-            notifyObservers(id, "Left Pollster", false);
-            
-            printState();
+            voterState.remove(id); // Remove o eleitor do mapa de estados
+            notifyObservers(id, "Left Pollster", false); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
@@ -233,39 +252,43 @@ public class MRepository implements IRepository_all {
     public void EPlied(int id, char vote) {
         lock.lock();
         try {
-            if(vote == 'A'){
+            if (vote == 'A') {
                 System.out.println("Voter " + id + " lied about voting for party B");
             } else {
                 System.out.println("Voter " + id + " lied about voting for party A");
             }
-            voterState.put(id, 8); // Mark voter as having lied
-            notifyObservers(id, "Lied", false);
-            printState();
-            leaveExitPoll(id);
+            voterState.put(id, 8); // Marca o eleitor como tendo mentido
+            notifyObservers(id, "Lied", false); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
+            leaveExitPoll(id); // Remove o eleitor da sondagem de saída
         } finally {
             lock.unlock();
         }
     }
 
+    /**
+     * Remove um eleitor da sondagem de saída.
+     * 
+     * @param voterId O ID do eleitor.
+     */
     private void leaveExitPoll(int voterId) {
         lock.lock();
         try {
-            voterState.remove(voterId); // Remove voter from the state map
-            notifyObservers(voterId, "Left", false);
+            voterState.remove(voterId); // Remove o eleitor do mapa de estados
+            notifyObservers(voterId, "Left", false); // Notifica os observadores
         } finally {
             lock.unlock();
         }
     }
 
     // ================= Métodos da Station =================
-    
+
     @Override
     public void Sopen() {
         lock.lock();
         try {
-            isClosed = false;
+            isClosed = false; // Marca a estação como aberta
             System.out.println("Station is open");
-           
         } finally {
             lock.unlock();
         }
@@ -275,7 +298,7 @@ public class MRepository implements IRepository_all {
     public void SaddId(int id) {
         lock.lock();
         try {
-            idList.add(id);
+            idList.add(id); // Adiciona o ID do eleitor à lista
         } finally {
             lock.unlock();
         }
@@ -285,9 +308,8 @@ public class MRepository implements IRepository_all {
     public void Sclose() {
         lock.lock();
         try {
-            isClosed = true;
+            isClosed = true; // Marca a estação como fechada
             System.out.println("Station is closed");
-            
         } finally {
             lock.unlock();
         }
@@ -297,7 +319,7 @@ public class MRepository implements IRepository_all {
     public void SannounceEnding() {
         lock.lock();
         try {
-            votingDayEnded = true;
+            votingDayEnded = true; // Marca o fim do dia de eleições
             System.out.println("Voting day has ended");
         } finally {
             lock.unlock();
@@ -308,9 +330,9 @@ public class MRepository implements IRepository_all {
     public void Senter(int id) {
         lock.lock();
         try {
-            voterState.put(id, 0); // Mark voter as in station
-            notifyObservers(id, "Entrance", false);
-            printState();
+            voterState.put(id, 0); // Marca o eleitor como estando na estação
+            notifyObservers(id, "Entrance", false); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
@@ -320,7 +342,7 @@ public class MRepository implements IRepository_all {
     public void Sleave(int id) {
         lock.lock();
         try {
-            
+            // Lógica para o eleitor sair da estação (pode ser implementada)
         } finally {
             lock.unlock();
         }
@@ -330,9 +352,9 @@ public class MRepository implements IRepository_all {
     public void Spresent(int id) {
         lock.lock();
         try {
-            voterState.put(id, 1); // Mark voter as having presented ID
-            notifyObservers(id, "Poll Clerk", false);
-            printState();
+            voterState.put(id, 1); // Marca o eleitor como tendo apresentado o ID
+            notifyObservers(id, "Poll Clerk", false); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
@@ -342,10 +364,9 @@ public class MRepository implements IRepository_all {
     public void Srejected(int id) {
         lock.lock();
         try {
-            
-            voterState.put(id, 3); // Mark voter as rejected
-            notifyObservers(id, "Rejected", false);
-            printState();
+            voterState.put(id, 3); // Marca o eleitor como tendo sido rejeitado
+            notifyObservers(id, "Rejected", false); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
@@ -355,118 +376,104 @@ public class MRepository implements IRepository_all {
     public void Svalidated(int id) {
         lock.lock();
         try {
-            
-            voterState.put(id, 2); // Mark voter as validated
-            notifyObservers(id, "Validated", true);
-            printState();
+            voterState.put(id, 2); // Marca o eleitor como tendo sido validado
+            notifyObservers(id, "Validated", true); // Notifica os observadores
+            printState(); // Atualiza o ficheiro de log
         } finally {
             lock.unlock();
         }
     }
 
-    // Restante do código (printHead, printState, printTail) permanece o mesmo
-
-
-    // ================= Logging Methods =================
+    // ================= Métodos de Logging =================
 
     /**
-     * Write the header to the logging file.
+     * Escreve o cabeçalho no ficheiro de log.
      */
-   // ================= Logging Methods =================
+    private void printHead() {
+        TextFile log = new TextFile();
+        if (!log.openForWriting(".", logFileName)) {
+            GenericIO.writelnString("O processo de criação do ficheiro " + logFileName + " falhou!");
+            System.exit(1);
+        }
 
-// ================= Logging Methods =================
+        // Cabeçalho com estados possíveis
+        StringBuilder header = new StringBuilder();
+        for (String state : possibleStates) {
+            header.append(String.format("%-20s | ", state)); // Formatação fixa para cada coluna
+        }
+        header.append("Votes A       | Votes B      | Exit A       | Exit B       | Closed   ");
 
-/**
- * Write the header to the logging file.
- */
-private void printHead() {
-    TextFile log = new TextFile();
-    if (!log.openForWriting(".", logFileName)) {
-        GenericIO.writelnString("The process of creating the file " + logFileName + " failed!");
-        System.exit(1);
-    }
+        log.writelnString("=== Log do Sistema de Votação ===");
+        log.writelnString(header.toString());
+        log.writelnString("------------------------------------------------------------------");
 
-    // Print headers (states) with fixed width
-    StringBuilder header = new StringBuilder();
-    for (String state : possibleStates) {
-        header.append(String.format("%-20s | ", state)); // Fixed width of 20 characters for each column
-    }
-    header.append("Votes A       | Votes B      | Exit A       | Exit B       | Closed   ");
-
-    log.writelnString("=== Voting System Log ===");
-    log.writelnString(header.toString());
-    log.writelnString("------------------------------------------------------------------");
-
-    if (!log.close()) {
-        GenericIO.writelnString("While trying to close the file " + logFileName + " the process failed.");
-    }
-}
-
-/**
- * Write the current state to the logging file.
- */
-private void printState() {
-    TextFile log = new TextFile();
-    if (!log.openForAppending(".", logFileName)) {
-        GenericIO.writelnString("The process of appending in file " + logFileName + " could not be started!");
-        System.exit(1);
-    }
-
-    // Initialize a map to group voter IDs by state
-    Map<Integer, StringBuilder> stateToVoters = new HashMap<>();
-    for (int i = 0; i < possibleStates.length; i++) {
-        stateToVoters.put(i, new StringBuilder());
-    }
-
-    // Group voter IDs by their current state
-    for (Map.Entry<Integer, Integer> entry : voterState.entrySet()) {
-        int id = entry.getKey();
-        int state = entry.getValue();
-        if (stateToVoters.containsKey(state)) {
-            if (stateToVoters.get(state).length() > 0) {
-                stateToVoters.get(state).append(",");
-            }
-            stateToVoters.get(state).append(id);
+        if (!log.close()) {
+            GenericIO.writelnString("O processo de fecho do ficheiro " + logFileName + " falhou.");
         }
     }
 
-    // Prepare the row with voter IDs for each state
-    StringBuilder stateLine = new StringBuilder();
-    for (int i = 0; i < possibleStates.length; i++) {
-        String voters = stateToVoters.get(i).toString();
-        stateLine.append(String.format("%-20s | ", voters)); // Fixed width of 20 characters for each column
+    /**
+     * Escreve o estado atual no ficheiro de log.
+     */
+    private void printState() {
+        TextFile log = new TextFile();
+        if (!log.openForAppending(".", logFileName)) {
+            GenericIO.writelnString("O processo de abertura do ficheiro " + logFileName + " falhou!");
+            System.exit(1);
+        }
+
+        // Mapa para agrupar eleitores por estado
+        Map<Integer, StringBuilder> stateToVoters = new HashMap<>();
+        for (int i = 0; i < possibleStates.length; i++) {
+            stateToVoters.put(i, new StringBuilder());
+        }
+
+        // Agrupa os IDs dos eleitores por estado
+        for (Map.Entry<Integer, Integer> entry : voterState.entrySet()) {
+            int id = entry.getKey();
+            int state = entry.getValue();
+            if (stateToVoters.containsKey(state)) {
+                if (stateToVoters.get(state).length() > 0) {
+                    stateToVoters.get(state).append(",");
+                }
+                stateToVoters.get(state).append(id);
+            }
+        }
+
+        // Prepara a linha com os IDs dos eleitores para cada estado
+        StringBuilder stateLine = new StringBuilder();
+        for (int i = 0; i < possibleStates.length; i++) {
+            String voters = stateToVoters.get(i).toString();
+            stateLine.append(String.format("%-20s | ", voters)); // Formatação fixa para cada coluna
+        }
+
+        // Adiciona as contagens de votos à linha
+        stateLine.append(String.format(" %-12d | %-12d | %-12d | %-12d | %-12s", 
+                                     votesA, votesB, exitVotesA, exitVotesB, isClosed));
+
+        // Escreve a linha no ficheiro de log
+        log.writelnString(stateLine.toString());
+
+        if (!log.close()) {
+            GenericIO.writelnString("O processo de fecho do ficheiro " + logFileName + " falhou.");
+        }
     }
-    
-    // Append the vote counts to the state line
-    stateLine.append(String.format(" %-12d | %-12d | %-12d | %-12d | %-12s", 
-                                   votesA, votesB, exitVotesA, exitVotesB, isClosed));
-
-    // Write the row to the log file
-    log.writelnString(stateLine.toString());
-
-    if (!log.close()) {
-        GenericIO.writelnString("While trying to close the file " + logFileName + " the process failed.");
-    }
-}
-
 
     /**
-     * Write the final state of the simulation at the end of the logging file.
+     * Escreve o estado final da simulação no ficheiro de log.
      */
     public void printTail() {
         TextFile log = new TextFile();
         if (!log.openForAppending(".", logFileName)) {
-            GenericIO.writelnString("The process of appending in file " + logFileName + " could not be started!");
+            GenericIO.writelnString("O processo de abertura do ficheiro " + logFileName + " falhou!");
             System.exit(1);
         }
 
-        log.writelnString("Voting day has ended. Total votes: A = " + votesA + ", B = " + votesB);
-        log.writelnString("Voting day has ended. Exit Poll votes: A = " + exitVotesA + ", B = " + exitVotesB);
+        log.writelnString("O dia de eleições terminou. Total de votos: A = " + votesA + ", B = " + votesB);
+        log.writelnString("O dia de eleições terminou. Votos na sondagem de saída: A = " + exitVotesA + ", B = " + exitVotesB);
 
         if (!log.close()) {
-            GenericIO.writelnString("While trying to close the file " + logFileName + " the process failed.");
+            GenericIO.writelnString("O processo de fecho do ficheiro " + logFileName + " falhou.");
         }
     }
-
-
 }
