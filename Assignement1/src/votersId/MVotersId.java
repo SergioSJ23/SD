@@ -53,6 +53,7 @@ public class MVotersId implements IVotersId_all {
             // Reuse an existing ID from the list, but ensure it's not already in use
             synchronized (idList) {
                 if (!idList.isEmpty()) {
+                    currentIds.add(id);
                     return id;
                 }
 
