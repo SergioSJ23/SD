@@ -13,8 +13,8 @@ public class MExitPoll implements IExitPoll_all {
     private char vote;
     private int voterId;
     private final int lie = 20;
-    private final int noResponse = 0;
-    private final int approached = 100;
+    private final int noResponse = 60;
+    private final int approached = 10;
     private final ReentrantLock lock = new ReentrantLock();
     private static IExitPoll_all instance;
     private final Condition pollsterCondition = lock.newCondition();
@@ -58,9 +58,10 @@ public class MExitPoll implements IExitPoll_all {
         }
     }
 
+
     @Override
     public void enterExitPoll(char vote, int voterId) {
-        if (isClosed) {
+        if (isClosed){
             leaveExitPoll(voterId);
         }
         lock.lock();
@@ -70,7 +71,7 @@ public class MExitPoll implements IExitPoll_all {
             pollsterReady = true;
             repository.EPenter(vote, voterId);
             pollsterCondition.signalAll();
-            voterCondition.await();
+            voterCondition.await(); // Wait until validation is complete
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
@@ -80,7 +81,7 @@ public class MExitPoll implements IExitPoll_all {
 
     @Override
     public void leaveExitPoll(int voterId) {
-        if (isClosed) {
+        if (isClosed){
             Thread.currentThread().interrupt();
             return;
         }
@@ -91,26 +92,30 @@ public class MExitPoll implements IExitPoll_all {
     public void inquire() throws InterruptedException {
         lock.lock();
         try {
-            while (!pollsterReady) {
-                pollsterCondition.await();
-            }
-            if (rand.nextInt(100) < approached) { // 10% chance de ser abordado
-                repository.EPapproached(voterId);
-                increment(vote == 'A' ? 0 : 1);
-                if (rand.nextInt(100) > noResponse) { // 60% chance de não responder
-                    if (rand.nextInt(100) < lie) { // 20% chance de mentir
-                        repository.EPlied(voterId, vote);
+        while (!pollsterReady) {
+            pollsterCondition.await();
+        }
+        if (rand.nextInt(100) < approached) { // 10% chance of being approached
+            repository.EPapproached(voterId);
+            increment(vote == 'A' ? 0 : 1);
+            if (rand.nextInt(100) > noResponse) { // 60% chance of not responding
+                if (rand.nextInt(100) < lie) { // 20% chance of lying
+                    if (vote == 'A') {
+                        repository.EPlied(voterId , vote);
                     } else {
-                        repository.EPtruth(voterId, vote);
+                        repository.EPlied(voterId , vote);
                     }
+                } else {
+                    repository.EPtruth(voterId , vote);
                 }
             }
+        }
 
-            pollsterReady = false;
-            voterCondition.signalAll();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw e;
+        pollsterReady = false; // Reset pollster readiness for the next voter
+        voterCondition.signalAll(); // Notify the voter to continue
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt(); // Restore the interrupt status
+        throw e; // Re-throw the exception to propagate the interruption
         } finally {
             lock.unlock();
         }

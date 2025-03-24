@@ -8,7 +8,7 @@ public class MVotersId implements IVotersId_all {
 
     private static MVotersId instance;
     private int id;
-    private final int repeatVoter = 30;
+    private final int repeatVoter = 10;
     private final static ArrayList<Integer> idList = new ArrayList<>();
     
     private MVotersId() {

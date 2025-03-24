@@ -31,7 +31,11 @@ public class TVoter extends Thread {
         this.observer = observer;
     }
 
-
+    private void notifyObserver(String state) {
+        if (this.observer != null) {
+            observer.updateVoterState(this.id, state);
+        }
+    }
 
     @Override
     public void run() {
@@ -50,13 +54,14 @@ public class TVoter extends Thread {
                     //notifyObserver("Voting Booth");
                 }
                 station.leaveStation(this.id);
+                notifyObserver("Exit");
                 exitPoll.enterExitPoll(this.vote, this.id);
                 exitPoll.leaveExitPoll(this.id);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+        System.out.println("Voter " + this.id + " is done");
     }
 
 

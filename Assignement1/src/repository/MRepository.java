@@ -6,8 +6,6 @@ import genclass.TextFile;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.List;
-import gui.VoterObserver;
 
 public class MRepository implements IRepository_all {
 
@@ -29,20 +27,16 @@ public class MRepository implements IRepository_all {
     private boolean isClosed = false;
     private boolean votingDayEnded = false;
 
-    // Atributos da Station
-    private int[] votes = new int[2];
-
     // Variáveis de controle do VotesBooth
     private ArrayList<Integer> idList = new ArrayList<>();
     
     // Map to store voter states
     private final Map<Integer, Integer> voterState = new HashMap<>(); // Key: Voter ID, Value: State
-    private final List<VoterObserver> observers = new ArrayList<>(); // Observers list
 
     // Possible states
     private final String[] possibleStates = {
         "Waiting", "Station", "Presenting", "Validated", "Rejected",
-        "Voted", "Exit Poll", "Approached", "Truth", "Lied", "Left Pollster"
+        "Voted", "Exit Poll", "Approached", "Truth", "Lied"
     };
 
     private MRepository() {
@@ -56,40 +50,6 @@ public class MRepository implements IRepository_all {
         return instance;
     }
 
-    // Observer management
-    public void addObserver(VoterObserver observer) {
-        lock.lock();
-        try {
-            observers.add(observer);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void removeObserver(VoterObserver observer) {
-        lock.lock();
-        try {
-            observers.remove(observer);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void notifyObservers(int voterId, String state, boolean validationResult) {
-        for (VoterObserver observer : observers) {
-            observer.updateVoterState(voterId, state, validationResult);
-        }
-    }
-
-    public int getVotesA() {
-        return votesA;
-    }
-    
-    public int getVotesB() {
-        return votesB;
-    }
-    
-
     // ================= Métodos do VotesBooth =================
 
     @Override
@@ -98,7 +58,6 @@ public class MRepository implements IRepository_all {
         try {
             votesA++;
             numVotes++;
-            
         } finally {
             lock.unlock();
         }
@@ -110,7 +69,6 @@ public class MRepository implements IRepository_all {
         try {
             votesB++;
             numVotes++;
-            
         } finally {
             lock.unlock();
         }
@@ -133,9 +91,8 @@ public class MRepository implements IRepository_all {
     public void VBgetVotes(int votesA, int votesB) {
         lock.lock();
         try {
-            
-            votes[0] = votesA;
-            votes[1] = votesB;
+            System.out.println("Votes for A: " + votesA);
+            System.out.println("Votes for B: " + votesB);
         } finally {
             lock.unlock();
         }
@@ -171,7 +128,6 @@ public class MRepository implements IRepository_all {
         try {
             isClosed = true;
             System.out.println("Exit poll knows the station is closed");
-            
         } finally {
             lock.unlock();
         }
@@ -221,8 +177,7 @@ public class MRepository implements IRepository_all {
         lock.lock();
         try {
             voterState.remove(id); // Remove voter from the state map
-            notifyObservers(id, "Left Pollster", false);
-            
+            System.out.println("Voter gone");
             printState();
         } finally {
             lock.unlock();
@@ -241,17 +196,6 @@ public class MRepository implements IRepository_all {
             voterState.put(id, 8); // Mark voter as having lied
             notifyObservers(id, "Lied", false);
             printState();
-            leaveExitPoll(id);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void leaveExitPoll(int voterId) {
-        lock.lock();
-        try {
-            voterState.remove(voterId); // Remove voter from the state map
-            notifyObservers(voterId, "Left", false);
         } finally {
             lock.unlock();
         }
@@ -265,7 +209,6 @@ public class MRepository implements IRepository_all {
         try {
             isClosed = false;
             System.out.println("Station is open");
-           
         } finally {
             lock.unlock();
         }
@@ -287,7 +230,6 @@ public class MRepository implements IRepository_all {
         try {
             isClosed = true;
             System.out.println("Station is closed");
-            
         } finally {
             lock.unlock();
         }
@@ -320,7 +262,7 @@ public class MRepository implements IRepository_all {
     public void Sleave(int id) {
         lock.lock();
         try {
-            
+            System.out.println("Voter " + id + " left the station");
         } finally {
             lock.unlock();
         }
@@ -330,8 +272,8 @@ public class MRepository implements IRepository_all {
     public void Swait(int id) {
         lock.lock();
         try {
+            System.out.println("Voter " + id + " is waiting");
             voterState.put(id, 0); // Mark voter as waiting
-            notifyObservers(id, "Waiting Room", false);
             printState();
         } finally {
             lock.unlock();
@@ -375,9 +317,6 @@ public class MRepository implements IRepository_all {
             lock.unlock();
         }
     }
-
-    // Restante do código (printHead, printState, printTail) permanece o mesmo
-
 
     // ================= Logging Methods =================
 
@@ -472,6 +411,4 @@ private void printState() {
             GenericIO.writelnString("While trying to close the file " + logFileName + " the process failed.");
         }
     }
-
-
 }

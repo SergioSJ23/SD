@@ -41,14 +41,13 @@ public class MStation implements IStation_all {
 
     @Override
     public void openStation() {
-        lock.lock();
+        lock.lock(); // Acquire the lock
         try {
             closen = false;
             repository.Sopen();
-             
-            statusCondition.signalAll();
+            statusCondition.signalAll(); // Signal all waiting threads
         } finally {
-            lock.unlock();
+            lock.unlock(); // Release the lock
         }
     }
 
@@ -56,10 +55,14 @@ public class MStation implements IStation_all {
     public void enterStation(int id) throws InterruptedException {
         lock.lock();
         try {
-            System.out.println("AAAAAAAAAAAA");
             while (closen && !electionDayEnded) {
-                repository.Swait(id);
-                statusCondition.await();
+                try {
+                    repository.Swait(id);
+                    statusCondition.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
         } finally {
             lock.unlock();
@@ -69,24 +72,26 @@ public class MStation implements IStation_all {
             return;
         }
 
-        queue.put(id);
-        System.out.println("BBBBBBBBBBBB");
-        repository.Senter(id);
-        
+        try {
+            queue.put(id);
+            repository.Senter(id);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore the interrupt status
+            throw e; // Re-throw the exception to propagate the interruption
+        }
     }
 
     @Override
     public boolean present(int id) {
-        while (id != queue.peek()) {}
+        while (id != queue.peek()) {
+        }
 
         lock.lock();
         try {
-            
             repository.Spresent(id);
-            
-            clerkReady = true;
+            clerkReady = true; // Notify that the clerk should proceed
             clerkCondition.signalAll();
-            voterCondition.await();
+            voterCondition.await(); // Wait until validation is complete
             return this.isIdValid;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -174,7 +179,6 @@ public class MStation implements IStation_all {
         try {
             closen = true;
             repository.Sclose();
-            
             voterCondition.signalAll();
             clerkCondition.signalAll();
         } finally {
@@ -184,7 +188,6 @@ public class MStation implements IStation_all {
 
     @Override
     public boolean countVotes() {
-        System.out.println(limitVotes);
         return limitVotes <= 0;
     }
 
