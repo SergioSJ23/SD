@@ -91,20 +91,20 @@ public class MExitPoll implements IExitPoll_all {
     public void inquire() throws InterruptedException {
         lock.lock();
         try {
-        while (!pollsterReady) {
-            pollsterCondition.await();
-        }
-        if (rand.nextInt(100) < approached) { // 10% chance of being approached
-            repository.EPapproached(voterId);
-            increment(vote == 'A' ? 0 : 1);
-            if (rand.nextInt(100) > noResponse) { // 60% chance of not responding
-                if (rand.nextInt(100) < lie) { // 20% chance of lying
-                    repository.EPlied(voterId , vote);
-                } else {
-                    repository.EPtruth(voterId , vote);
+            while (!pollsterReady) {
+                pollsterCondition.await();
+            }
+            if (rand.nextInt(100) < approached) { // 10% chance de ser abordado
+                repository.EPapproached(voterId);
+                increment(vote == 'A' ? 0 : 1);
+                if (rand.nextInt(100) > noResponse) { // 60% chance de não responder
+                    if (rand.nextInt(100) < lie) { // 20% chance de mentir
+                        repository.EPlied(voterId, vote);
+                    } else {
+                        repository.EPtruth(voterId, vote);
+                    }
                 }
             }
-        }
 
             pollsterReady = false;
             voterCondition.signalAll();

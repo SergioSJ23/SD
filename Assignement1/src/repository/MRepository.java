@@ -41,7 +41,7 @@ public class MRepository implements IRepository_all {
 
     // Possible states
     private final String[] possibleStates = {
-        "Station", "Presenting", "Validated", "Rejected",
+        "Waiting", "Station", "Presenting", "Validated", "Rejected",
         "Voted", "Exit Poll", "Approached", "Truth", "Lied", "Left Pollster"
     };
 
@@ -133,9 +133,9 @@ public class MRepository implements IRepository_all {
     public void VBgetVotes(int votesA, int votesB) {
         lock.lock();
         try {
-            System.out.println("Votes for A: " + votesA);
-            System.out.println("Votes for B: " + votesB);
-            printTail();
+            
+            votes[0] = votesA;
+            votes[1] = votesB;
         } finally {
             lock.unlock();
         }
@@ -327,6 +327,18 @@ public class MRepository implements IRepository_all {
     }
 
     @Override
+    public void Swait(int id) {
+        lock.lock();
+        try {
+            voterState.put(id, 0); // Mark voter as waiting
+            notifyObservers(id, "Waiting Room", false);
+            printState();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
     public void Spresent(int id) {
         lock.lock();
         try {
@@ -389,10 +401,8 @@ private void printHead() {
     // Print headers (states) with fixed width
     StringBuilder header = new StringBuilder();
     for (String state : possibleStates) {
-        header.append(String.format("%-20s | ", state)); // Fixed width of 20 characters for each column
+        header.append(String.format("%-20s | ", state)); // Fixed width of 15 characters for each column
     }
-    header.append("Votes A       | Votes B      | Exit A       | Exit B       | Closed   ");
-
     log.writelnString("=== Voting System Log ===");
     log.writelnString(header.toString());
     log.writelnString("------------------------------------------------------------------");
@@ -402,9 +412,6 @@ private void printHead() {
     }
 }
 
-/**
- * Write the current state to the logging file.
- */
 /**
  * Write the current state to the logging file.
  */
@@ -437,12 +444,8 @@ private void printState() {
     StringBuilder stateLine = new StringBuilder();
     for (int i = 0; i < possibleStates.length; i++) {
         String voters = stateToVoters.get(i).toString();
-        stateLine.append(String.format("%-20s | ", voters)); // Fixed width of 20 characters for each column
+        stateLine.append(String.format("%-20s | ", voters)); // Fixed width of 15 characters for each column
     }
-    
-    // Append the vote counts to the state line
-    stateLine.append(String.format(" %-12d | %-12d | %-12d | %-12d | %-12s", 
-                                   votesA, votesB, exitVotesA, exitVotesB, isClosed));
 
     // Write the row to the log file
     log.writelnString(stateLine.toString());
@@ -464,7 +467,6 @@ private void printState() {
         }
 
         log.writelnString("Voting day has ended. Total votes: A = " + votesA + ", B = " + votesB);
-        log.writelnString("Voting day has ended. Exit Poll votes: A = " + exitVotesA + ", B = " + exitVotesB);
 
         if (!log.close()) {
             GenericIO.writelnString("While trying to close the file " + logFileName + " the process failed.");

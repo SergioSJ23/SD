@@ -27,18 +27,19 @@ public class MVotesBooth implements IVotesBooth_all {
     public void vote(char vote, int voterId) {
         lock.lock();
         try {
-            Thread.sleep(rand.nextInt(16));
-            if(vote == 'A'){
-                incrementA();
-            }else{
-                incrementB();
+            try {
+                Thread.sleep(rand.nextInt(16));
+                if (vote == 'A') {
+                    incrementA();
+                } else {
+                    incrementB();
+                }
+                repository.VBvote(vote, voterId);
+            } finally {
+                lock.unlock();
             }
-            repository.VBvote(vote, voterId); 
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
         }
     }
 
