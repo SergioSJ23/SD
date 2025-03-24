@@ -405,9 +405,6 @@ private void printHead() {
 /**
  * Write the current state to the logging file.
  */
-/**
- * Write the current state to the logging file.
- */
 private void printState() {
     TextFile log = new TextFile();
     if (!log.openForAppending(".", logFileName)) {

@@ -7,65 +7,77 @@ import station.IStation_Voter;
 import votersId.IVoterId_Voter;
 import votesbooth.IVotesBooth_Voter;
 
+// Classe que representa um eleitor (voter) como uma thread
 public class TVoter extends Thread {
 
-    private int id;
-    private char vote;
-    private final int partyOdds = 50;
-    private final IStation_Voter station;
-    private final IVotesBooth_Voter votesBooth;
-    private final IExitPoll_Voter exitPoll;
-    private final IVoterId_Voter voterId;
-    private VoterObserver observer;
+    private int id; // ID do eleitor
+    private char vote; // Voto do eleitor ('A' ou 'B')
+    private final int partyOdds = 50; // Probabilidade de votar em 'A' ou 'B' (50%)
+    private final IStation_Voter station; // Estação de votação
+    private final IVotesBooth_Voter votesBooth; // Urna de votação
+    private final IExitPoll_Voter exitPoll; // Sondagem de saída
+    private final IVoterId_Voter voterId; // Gerador de IDs de eleitores
+    private VoterObserver observer; // Observador para atualizações da interface gráfica
 
-
-    public TVoter (IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll, IVoterId_Voter voterId) {
+    // Construtor da classe TVoter
+    public TVoter(IStation_Voter station, IVotesBooth_Voter votesBooth, IExitPoll_Voter exitPoll, IVoterId_Voter voterId) {
         this.station = station;
         this.votesBooth = votesBooth;
         this.exitPoll = exitPoll;
         this.voterId = voterId;
-        
     }
 
+    // Método para registar um observador (para atualizações da interface gráfica)
     public void registerObserver(VoterObserver observer) {
         this.observer = observer;
     }
 
-
-
+    // Método principal da thread
     @Override
     public void run() {
         try {
             while (true) {
+                // Gera ou reutiliza um ID para o eleitor
                 id = voterId.reborn();
+
+                // Escolhe o voto ('A' ou 'B')
                 chooseVote();
-                //notifyObserver("Entrance");
+
+                // Entra na estação de votação
                 station.enterStation(this.id);
+
+                // Verifica se a thread foi interrompida
                 if (Thread.currentThread().isInterrupted()) {
                     break;
                 }
+
+                // Verifica se o eleitor está presente na estação
                 if (station.present(this.id)) {
-                    //notifyObserver("Voting Station");
+                    // Vota na urna
                     votesBooth.vote(this.vote, this.id);
-                    //notifyObserver("Voting Booth");
                 }
+
+                // Sai da estação de votação
                 station.leaveStation(this.id);
+
+                // Entra na sondagem de saída
                 exitPoll.enterExitPoll(this.vote, this.id);
+
+                // Sai da sondagem de saída
                 exitPoll.leaveExitPoll(this.id);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Trata exceções
         }
-        System.out.println("Voter interrupted");
+        System.out.println("Voter interrupted"); // Mensagem de interrupção
     }
 
-
-
-    private void chooseVote(){
+    // Método para escolher o voto ('A' ou 'B') com base numa probabilidade
+    private void chooseVote() {
         if (ThreadLocalRandom.current().nextInt(0, 100) >= this.partyOdds) {
-            this.vote = 'A';
+            this.vote = 'A'; // Vota em 'A' com 50% de probabilidade
         } else {
-            this.vote = 'B';
+            this.vote = 'B'; // Vota em 'B' com 50% de probabilidade
         }
     }
 }

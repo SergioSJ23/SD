@@ -56,7 +56,6 @@ public class MStation implements IStation_all {
     public void enterStation(int id) throws InterruptedException {
         lock.lock();
         try {
-            System.out.println("AAAAAAAAAAAA");
             while (closen && !electionDayEnded) {
                 try {
                     statusCondition.await();
@@ -75,7 +74,7 @@ public class MStation implements IStation_all {
 
         try {
             queue.put(id);
-            Thread.sleep(100);
+            Thread.sleep(40);
             if (electionDayEnded){
                 queue.remove(id);
                 Thread.currentThread().interrupt();
