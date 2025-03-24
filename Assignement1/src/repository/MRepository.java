@@ -121,7 +121,7 @@ public class MRepository implements IRepository_all {
         lock.lock();
         try {
             
-            voterState.put(id, 5); // Mark voter as having voted
+            voterState.put(id, 4); // Mark voter as having voted
             notifyObservers(id, "Voted", false);
             printState();
         } finally {
@@ -182,7 +182,7 @@ public class MRepository implements IRepository_all {
         lock.lock();
         try {
             
-            voterState.put(id, 6); // Mark voter as in exit poll
+            voterState.put(id, 5); // Mark voter as in exit poll
             notifyObservers(id, "Exit Polling Area", false);
             printState();
         } finally {
@@ -195,7 +195,7 @@ public class MRepository implements IRepository_all {
         lock.lock();
         try {
             
-            voterState.put(id, 7); // Mark voter as approached
+            voterState.put(id, 6); // Mark voter as approached
             notifyObservers(id, "Pollster", false);
             System.out.println();
             printState();
@@ -208,7 +208,7 @@ public class MRepository implements IRepository_all {
     public void EPtruth(int id, char vote) {
         lock.lock();
         try {
-            voterState.put(id, 8); // Mark voter as having told the truth
+            voterState.put(id, 7); // Mark voter as having told the truth
             notifyObservers(id, "Truth", true);
             printState();
         } finally {
@@ -238,7 +238,7 @@ public class MRepository implements IRepository_all {
             } else {
                 System.out.println("Voter " + id + " lied about voting for party A");
             }
-            voterState.put(id, 9); // Mark voter as having lied
+            voterState.put(id, 8); // Mark voter as having lied
             notifyObservers(id, "Lied", false);
             printState();
             leaveExitPoll(id);
@@ -308,7 +308,7 @@ public class MRepository implements IRepository_all {
     public void Senter(int id) {
         lock.lock();
         try {
-            voterState.put(id, 1); // Mark voter as in station
+            voterState.put(id, 0); // Mark voter as in station
             notifyObservers(id, "Entrance", false);
             printState();
         } finally {
@@ -330,7 +330,7 @@ public class MRepository implements IRepository_all {
     public void Spresent(int id) {
         lock.lock();
         try {
-            voterState.put(id, 2); // Mark voter as having presented ID
+            voterState.put(id, 1); // Mark voter as having presented ID
             notifyObservers(id, "Poll Clerk", false);
             printState();
         } finally {
@@ -343,7 +343,7 @@ public class MRepository implements IRepository_all {
         lock.lock();
         try {
             
-            voterState.put(id, 4); // Mark voter as rejected
+            voterState.put(id, 3); // Mark voter as rejected
             notifyObservers(id, "Rejected", false);
             printState();
         } finally {
@@ -356,7 +356,7 @@ public class MRepository implements IRepository_all {
         lock.lock();
         try {
             
-            voterState.put(id, 3); // Mark voter as validated
+            voterState.put(id, 2); // Mark voter as validated
             notifyObservers(id, "Validated", true);
             printState();
         } finally {
