@@ -7,6 +7,8 @@ import station.*;
 import threads.*;
 import votersId.*;
 import votesbooth.*;
+import gui.*;
+import repository.MRepository;
 
 public class Main {
     private static int numVoters = 0;
@@ -61,9 +63,9 @@ public class Main {
         IVotesBooth_all votesBooth;
         IVotersId_all votersID;
 
-        // Register the observer
-       // VoterObserver observer = new VotingStationGUI();
-        
+        // Register the GUI as an observer
+        VotingStationGUI gui = new VotingStationGUI();
+        MRepository.getInstance().addObserver(gui);
 
 
         //threads
@@ -85,7 +87,7 @@ public class Main {
         tpollster.start();
 
         // Start the GUI
-        //VotingStationGUI.run();
+        VotingStationGUI.run();
 
         for (int i = 0; i < numVoters; i++) {
             TVoter voter = new TVoter((IStation_Voter) station, (IVotesBooth_Voter) votesBooth, (IExitPoll_Voter) exitPoll, (IVoterId_Voter) votersID);
