@@ -74,7 +74,6 @@ public class MStation implements IStation_all {
 
         try {
             queue.put(id);
-            Thread.sleep(40);
             if (electionDayEnded){
                 queue.remove(id);
                 Thread.currentThread().interrupt();
@@ -197,7 +196,6 @@ public class MStation implements IStation_all {
 
     @Override
     public boolean countVotes() {
-        System.out.println(limitVotes);
         return limitVotes <= 0;
     }
 
@@ -215,7 +213,6 @@ public class MStation implements IStation_all {
 
     private void decrementLimit(){
         lock.lock();
-        System.out.println(limitVotes);
         try {
             limitVotes--;
         } finally {

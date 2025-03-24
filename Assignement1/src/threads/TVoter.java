@@ -36,11 +36,9 @@ public class TVoter extends Thread {
     @Override
     public void run() {
         try {
+            id = 0;
             while (true) {
-                // Gera ou reutiliza um ID para o eleitor
-                id = voterId.reborn();
-
-                // Escolhe o voto ('A' ou 'B')
+                id = voterId.reborn(id);
                 chooseVote();
 
                 // Entra na estação de votação
